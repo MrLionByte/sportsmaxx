@@ -1,0 +1,211 @@
+{% extends 'user\\category.html' %}
+
+	{% load static %}
+
+    {% block search_option %}
+    <div class="search_input" id="search_input_box">
+        <div class="container">
+            <form class="d-flex justify-content-between" action="{% url 'user_products' product_id %}" method="post">
+                {% csrf_token %}
+                <input type="text" class="form-control" id="search_input" placeholder="Search Here" name="search" autocomplete="off">
+                <button type="submit" class="btn"></button>
+                <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+            </form>
+        </div>
+    </div>
+    {% endblock search_option %}
+    
+    {% block header_name %}
+    <h1> Products</h1>
+    {% endblock header_name %}
+
+    {% block section_messages %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+    {% endblock section_messages %}
+
+    {% block category_browse %}
+    <div class="sidebar-categories">
+        <div class="head">
+            {{selected_category}}
+        </div>
+    </div>
+    {% endblock category_browse %}
+    
+    						{% block pagination_up %}
+
+						{% if category_products.has_previous %}
+            					<a href="?page={{ category_products.previous_page_number }}" class="prev-arrow">
+                				<i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+            					</a>
+        				{% endif %}
+
+        						<!-- <a href="?page={{ category_products.number }}" class="active">{{ category_products.number }}</a> -->
+        
+        				{% for num in category_products.paginator.page_range %}
+            				{% if num != category_products.number %}
+                				{% if num > category_products.number|add:'-2' and num < category_products.number|add:'2' %}
+                    				<a href="?page={{ num }}">{{ num }}</a>
+                				{% endif %}
+            				{% endif %}
+        				{% endfor %}
+        
+									<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+									<a href="?page={{ category_products.paginator.num_pages }}">{{ category_products.paginator.num_pages }}</a>
+        
+						{% if category_products.has_next %}
+							<a href="?page={{ category_products.next_page_number }}" class="next-arrow">
+								<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+							</a>
+						{% endif %}
+						{% endblock pagination_up %}
+
+    {% block load_product %}
+    {% if category_products %}
+    {% for data in category_products %}
+    <div class="col-lg-4 col-md-6 ">
+        <div class="single-product d-flex flex-column">
+            
+            <a href="{% url 'product_details' data.pk %}">
+                {% if not data.product_size_qty.all  %}
+								<div class="stamp" style="position: absolute; top: 10px; left: 10px; width: 50px; height: 50px; background-color: red;
+								color: white; display: flex; justify-content: center; align-items: center;">OUT OF STOCK</div>
+				{% endif %}
+                {% if data.featured and data.product_size_qty.all %}
+                <div class="stamp" style="position: absolute; top: 10px; left: 10px;
+                color: white; display: flex; justify-content: center; align-items: center;">
+                    <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/000000/filled-star.png" alt="filled-star"/>
+                </div>
+                {% endif %}
+            <img style="width: 255px; height: 255px;" class="img-fluid" src="{{ data.image_first.url }}" alt=""></a>
+            <a href="{% url 'add_to_wishlist' data.pk %}?next={{request.path}}" id="add-to-wishlist-button" class="btn btn-outline-info w-75 ml-4" data-product-id="{{ data.pk }}">Add to wishlist</a>
+            <div class="product-details text-center">
+                <h6 class="text-center">{{data.product_id}}</h6>
+                <div class="price">
+                    {% if data.status or data.product_size_qty.all %}
+                    <h6>₹ {{ data.product_id.product_price_after }}</h6>
+                    {% else %}
+                    <p class="text-danger">OUT OF STOCK</p>
+                    {% endif %}
+                    {% if data.status %}
+                    <h6 class="l-through">₹ {{ data.product_id.product_price }} </h6>
+                    {% if data.product_id.offer_percentage >= data.product_id.category_id.offer_percentage %}
+                    <span class="text-dark">(% {{data.product_id.offer_percentage}})</span>
+                    {% else %}
+                    <span class="text-dark">(% {{data.product_id.category_id.offer_percentage}})</span>
+                    {% endif %}
+                    {% endif %} 
+                </div>
+                
+                <div class="prd-bottom">
+                    <a href="{% url 'product_details' data.pk %}">
+                        <!-- <p class="hover-text"> Details</p> -->
+                    </a>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+    {% else %}
+    <div class="col-lg-4 col-md-6">
+        <div class="single-product">
+            <h3 class="text-warning text-center">No Product Available in this Category</h3>
+        </div>
+    </div>
+    {% endif %}
+	{% endblock load_product %}
+
+    {% block pagination_down %}
+
+    {% if category_products.has_previous %}
+            <a href="?page={{ category_products.previous_page_number }}" class="prev-arrow">
+            <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+            </a>
+    {% endif %}
+
+            <!-- <a href="?page={{ category_products.number }}" class="active">{{ category_products.number }}</a> -->
+
+    {% for num in category_products.paginator.page_range %}
+        {% if num != category_products.number %}
+            {% if num > category_products.number|add:'-2' and num < category_products.number|add:'2' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+                <a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+                <a href="?page={{ category_products.paginator.num_pages }}">{{ category_products.paginator.num_pages }}</a>
+
+    {% if category_products.has_next %}
+        <a href="?page={{ category_products.next_page_number }}" class="next-arrow">
+            <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+        </a>
+    {% endif %}
+
+    {% endblock pagination_down %}
+
+	{% block  related_product_area_section_gap %}
+	
+	{% endblock related_product_area_section_gap %}
+	{% block extra_script %}
+
+	<script>
+        $(document).ready(function() {
+			$("#sort-select_page").change(function() {
+				var selectedOption = $(this).val();
+				if (selectedOption) {
+					window.location.href = "{% url 'user_products' product_id %}?page_content_count=" + selectedOption;
+				}
+			});
+		});
+
+		$(document).ready(function() {
+			$('#sort-select').change(function() {
+				var selectedOption = $(this).val();
+				if (selectedOption) {
+					window.location.href = "{% url 'user_products' product_id %}?sort_id=" + selectedOption;
+				}
+			});
+		});
+
+        document.addEventListener('DOMContentLoaded', function() {
+            $( "#price-range" ).slider({
+                range: true,
+                min: 0,
+                max: 1000,
+                values: [ 75, 300 ],
+                slide: function( event, ui ) {
+                    $( "#lower-value" ).text( "₹" + ui.values[ 0 ] );
+                    $( "#upper-value" ).text( "₹" + ui.values[ 1 ] );
+                    // Update hidden input fields
+                    $( "#lower-value-input" ).val(ui.values[ 0 ]);
+                    $( "#upper-value-input" ).val(ui.values[ 1 ]);
+                    // Log updates to console
+                    console.log("Lower value:", ui.values[0]);
+                    console.log("Upper value:", ui.values[1]);
+                    // Submit the form
+                    document.getElementById('your-form-id').submit();
+                }
+            });
+        });
+		</script>
+	{% endblock extra_script %}

@@ -1,0 +1,160 @@
+{% extends 'user/login.html' %}
+{% load static %}
+
+{% block link %}
+
+{% endblock link %}
+
+{% block header %}
+{% endblock header %}
+
+{% block Banner %}
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div >
+                <h1>Forgot password</h1>
+                <nav class="d-flex align-items-center">
+
+                </nav>
+            </div>
+            
+        </div>
+    </div>
+</section>
+{% endblock Banner %}
+
+{% block Login %}
+
+<!--================Login Box Area =================-->
+<section class="login_box_area section_gap">
+    <div class="container">
+        <div class="row">
+         
+
+            <div class="col-md-6  d-flex align-items-center">
+              
+              {% if user_data %}
+           
+              {% endif %}
+                
+                <div class="card-body">
+                  {% if messages  %}
+                  {% for message in messages %}
+                          <div class="ml-3 w-75">
+                            {% if message.tags == 'error' %}
+                              <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                      <div class="">
+                              {{message}}
+                                      </div>
+                              </div>
+                              {% else %}
+                              <div class="alert alert-success d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"></svg>
+                                    <div class="">
+                            {{message}}
+                                    </div>
+                            </div>
+                              {% endif %}
+                          </div>
+                  {% endfor %}
+                  {% endif %}
+                  <br>
+                  {% if not user_data %}
+                  <form id="otp-form" method="post" action="{% url 'forgot_password_email' %}">
+                    {% csrf_token %}
+                    <p class="text-danger">Forgot your password ?</p>
+                    <p>You will get a mail with OTP to set new password</p>
+                      <div class="d-flex justify-content-center w-75">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required  autocomplete="off">
+                    </div>
+                    <div class="d-flex justify-content-between w-75">
+                  <button type="submit" class="btn btn-primary mt-3">Send Mail</button>
+                  <a href="{% url 'user_sign_in' %}" class="btn btn-warning mt-3" >Cancel</a>
+                    </div>
+                </form>
+
+                    {% else %}
+                    <form id="otp-form" method="post" action="{% url 'forgot_password' %}">
+                      {% csrf_token %}
+                      <p class="text-danger">Forgot your password ?</p>
+                    <p>Enter the new password</p>
+
+                        <input type="password" class="form-control mr-5 col-10" id="password" name="password_new" placeholder="password" required  autocomplete="off"><br>
+                        <input type="password" class="form-control col-10" id="password" name="password_conf" placeholder="Confirm password" required  autocomplete="off">
+
+                    <div>
+                      <br>
+                      <br>
+                      <p>Enter OTP <span id="otp-timer"></span></p>
+                      <div class="d-flex justify-content-between w-50">
+                        <input type="text" name="otp_input" class=" form-control text-center otp-box ml-2" maxlength="6" required autocomplete="off">
+                        </div>
+                    </div>
+  
+                  <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                  <a href="{% url 'forgot_password_otp' %}" class="ml-5">Resend otp</a>
+                  </form>
+                  {% endif %}
+
+                </div>
+             
+              </div>
+        
+
+
+            <div class="col-lg-6">
+                <div class="login_box_img">
+                    <img class="img-fluid" src="{% static 'img/login_img.jpeg' %}" alt="">
+                    <div class="hover">
+                        <!-- <h4>New to our website?</h4>
+                        <p>There are advances being made in science and technology everyday, and a good example of this is the</p>
+                        <a class="primary-btn" href="registration.html">Create an Account</a> -->
+                    </div>
+                </div>
+            </div>          
+        
+        </div>
+    </div>
+</section>
+<!--================End Login Box Area =================-->
+
+{% endblock Login %}
+
+{% block footer %}
+{% endblock footer %}
+
+{% block js_link %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" 
+integrity="sha384-kenU1KFdBIe4zVFQWjxhNqjvET+saZCTsxzPxCQlqaqe1ySxhkQP6B05z/Hyaihfo" crossorigin="anonymous"></script>
+<script>
+    
+const otpTimerElement = document.getElementById('otp-timer');
+const submitButton = document.querySelector('#otp-form button');
+
+
+const expiryTime = 300;
+
+let remainingSeconds = expiryTime;
+
+const timerInterval = setInterval(() => {
+  remainingSeconds--;
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds % 60;
+
+  otpTimerElement.textContent = `(Expires in ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+
+  if (remainingSeconds <= 0) {
+    clearInterval(timerInterval);
+    otpTimerElement.textContent = '(Expired)';
+    submitButton.disabled = true; 
+  } else {
+    submitButton.disabled = false; 
+  }
+}, 1000); 
+
+</script>
+ 
+{% endblock js_link %}

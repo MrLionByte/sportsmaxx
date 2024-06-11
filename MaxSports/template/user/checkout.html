@@ -1,0 +1,390 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+{% block section_data %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<!--================Checkout Area =================-->
+<section class="checkout_area section_gap">
+    <div class="container">
+   
+        <div class="billing_details">
+ 
+            <div class="row">
+                <form class="row contact_form"  id="payment-form" action="{% url 'add_to_order' %}" method="post">
+                    {% csrf_token %}
+                <div class="col-lg-6">
+                    <h3>Checkout Details</h3>
+                        {% if user_addresses %}
+
+                        {% for address in user_addresses %}
+                        <div class="col-md-12 form-group p_star p-4">
+                            <input type="radio" id="address-{{address.id}}" required name="selected_address" value="{{address.id}}">
+
+                <p class="text-dark mb-0">         Name : {{address.full_name}}</p>
+                <p class="text-dark mb-0">Phone :{{address.phone_no}}<br>Alternative Ph :{{address.alternative_phone}}</p>
+                <p class="text-dark mb-0">Delivery to : {{address.address_type}},<br>{{address.accessible}},{{address.area}},near {{address.landmark}},{{address.city}}<br>
+                                                                Po : {{address.post_office}},Pin :{{address.pincode}}, {{address.state}}
+                            <div class="d-flex justify-content-end">
+                            <a class="text-info btn btn-outline-info justify-content-end mr-2" href="{% url 'edit_checkout_address' address.id %}">Edit</a></div></p>
+                        </div>
+                        
+                        {% endfor %}
+                        <br>
+                        <br>
+                        <br>
+                        {% else %}
+                        <h6 class="text-danger">Without address you can't order </h6>
+                        {% endif %}
+                        <a style="background-color: blue;" class="mr-5 primary-btn" href="{% url 'add_checkout_address' %}">Add Address</a>
+           
+                        <a style="background-color: rgb(255, 140, 0);" class="ml-5 primary-btn" href="{% url 'cart_show' %}">Cancel</a>
+                        <div class="col-md-12 form-group">
+                           
+                        </div>
+                        <div class="col-md-12 form-group">
+                        
+                        </div>
+                        <div class="col-md-12 form-group">
+                        
+                        </div>
+                    
+                </div>
+                <div class="col-lg-6">
+                    <div class="order_box">
+                        <h2>Your Order</h2>
+                        <ul class="list">
+                            <input type="hidden"  name="cart_id" value="{{cart_all.pk}}">
+                            <li class="d-fex justify-content between"><a href="#">Product <span>Total</span></a></li>
+                            {% for item in cart_all %}
+                            <input type="hidden"  name="cart_id" value="">
+                            <li><a href="#">{{item.product_color_variant.product_data_id}}<span class="middle">x {{item.quantity}}</span> <span class="last">₹ {{item.sub_total}}</span></a></li>
+                            
+                          {% endfor %}
+                        </ul>
+                        <ul class="list list_2">
+                          <li class="">Applied Coupon : <span class="last">{{coupon}} </span></li>
+                            <li><a href="#">Subtotal <span>₹ {{total_sum}}</span></a></li>
+
+                            {% if total_sum < 4000 %}
+                            <li><a href="#">Shipping <span>Flat rate: ₹ 150.00</span></a></li>
+                            <li><a href="#">Total <span>₹ {{final_sum}}</span></a></li>
+                            <input type="number" id="amount" name="amount" value="{{final_sum}}" hidden required>
+                            {% else %}
+                            <li><a href="#">Shipping <span>Free for you</span></a></li>
+                            <input type="number" id="amount" name="amount" value="{{total_sum}}" hidden required>
+                            <li><a href="#">Total <span>₹ {{total_sum}}</span></a></li>
+                            {% endif %}
+                            
+                        </ul>
+                        {% if total_sum < 5001 %}
+                        <div class="payment_item">
+                            <div class="radion_btn">
+                                <input type="radio" id="f-option5" value="cod" required name="payment_mode">
+                                <label for="f-option5">Cash On Delivery</label>
+                                <div class="check"></div>
+                            </div>
+                            <p>Product will be delivered to you with in 10 days.</p>
+                        </div>
+                        {% else %}
+                        <div class="payment_item">
+                            <div class="radion_btn">
+                                <input type="radio" disabled id="f-option5" value="cod" required name="payment_mode">
+                                <label for="f-option5">Cash On Delivery</label>
+                                <div class="check"></div>
+                            </div>
+                            <p>COD Not available, Total price exceed limit (Minimum 5000)</p>
+                        </div>
+                        {% endif %}
+                        <div class="payment_item ">
+                            <div class="radion_btn">
+                                <input type="radio" id="f-option6" value="razorpay" required name="payment_mode">
+                                <label for="f-option6">Razor Pay </label>
+                                <img src="img/product/card.jpg" alt="">
+                                <div class="check"></div>
+                            </div>
+                            <p>Opt cashless payment
+                           <br> Product will be delivered to you with in 7 working days</p>
+                        </div>
+                        <div class="payment_item ">
+                            {% if wallet.balance >= total_sum %}
+                            <div class="radion_btn" >
+                                <input type="radio" id="f-option7" required value="wallet" name="payment_mode">
+                                <label for="f-option7">Wallet </label>
+                                <img src="img/product/card.jpg" alt="">
+                                <div class="check"></div>
+                            </div>
+                            <p>Balance : {{wallet.balance}}</p>
+                            {% else %}
+                            <div class="radion_btn" >
+                                <input type="radio" id="f-option7" value="paypal" disabled name="payment_mode">
+                                <label for="f-option7">Wallet</label>
+                                <img src="img/product/card.jpg" alt="">
+                                <div class="check"></div>
+                            </div>
+                            <p>Balance not enough. <br> Balance : {{wallet.balance}}</p>
+                            {% endif %}
+                        </div>
+                        <div class="creat_account">
+                            <input type="checkbox" id="f-option4" name="terms" required>
+                            <label for="f-option4">I’ve read and accept the </label>
+                            <a href="{% url 'terms' %}">terms & conditions*</a>
+                        </div>
+                        {% if user_addresses %}
+                        <button class="primary-btn" id="pay-button" type="submit">Confirm Order</button>
+                        {% endif %}
+                    </div>
+                </form>
+                </div>
+     
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Checkout Area =================-->
+
+{% endblock section_data %}
+
+{% block extra_script %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    $(document).ready(function() {
+        $("#pay-button").click(function(e) {
+            e.preventDefault();
+    
+            const amount = $("#amount").val();
+            const selectedAddressId = $("input[name='selected_address']:checked").val();
+            const selectedPayment = $("input[name='payment_mode']:checked").val();
+            console.log(amount, " amount ", selectedAddressId, "address", selectedPayment, "payment");
+    
+            if (!selectedAddressId) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please select an address before proceeding with the payment.',
+                    icon: 'error',
+                    showConfirmButton: true
+                });
+                return; // Exit the function if no address is selected
+            }
+    
+            const data = {
+                amount: amount,
+                selected_address: selectedAddressId,
+                payment_mode: selectedPayment,
+            };
+            console.log(data, "dataaaa");
+    
+            if (selectedPayment === 'razorpay') {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'initiate_payment' %}",
+                    data: data,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                        console.log(data, " working ");
+                    },
+                    success: function(data) {
+                        console.log(" success ");
+                        const options = {
+                            key: data.key,
+                            amount: data.amount,
+                            currency: data.currency,
+                            order_id: data.id,
+                            name: data.name,
+                            description: data.description,
+                            image: data.image,
+                            handler: function(response) {
+                                if (response.razorpay_payment_id) {
+                                    Swal.fire({
+                                        text: 'Payment was successful. Redirecting to order details...',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.href = "/user/checkout/add_to_order/";
+                                    });
+                                } else {
+                                    // If payment fails or is cancelled
+                                    console.log('Payment Failed or Cancelled');
+                                    Swal.fire({
+                                        title: 'Payment failed',
+                                        text: "Your payment didn't go through. Placing order with pending payment status...",
+                                        icon: 'error',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        // Place order with amount 0.00
+                                        data.amount = 0.00;
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "{% url 'add_to_order' %}",
+                                            data: data,
+                                            dataType: "json",
+                                            beforeSend: function(xhr) {
+                                                xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                                                console.log(data, " working ");
+                                            },
+                                            success: function(response) {
+                                                console.log("Success:", response.message);
+                                                window.location.href = "/user/order_confirm/";
+                                            },
+                                            error: function(error) {
+                                                console.error("Error adding order:", error);
+                                                Swal.fire({
+                                                    title: 'Error!',
+                                                    text: 'There was an issue processing your order. Please try again.',
+                                                    icon: 'error',
+                                                    showConfirmButton: true
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
+                            },
+                            prefill: {
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "customer_contact",
+                            },
+                            modal: {
+                                ondismiss: function() {
+                                    // If the user closes the Razorpay modal
+                                    console.log('Payment Modal Closed');
+                                    Swal.fire({
+                                        title: 'Payment failed',
+                                        text: "Your payment didn't go through. Placing order with pending payment status...",
+                                        icon: 'error',
+                                        timer: 4000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        // Place order with amount 0.00
+                                        data.amount = 0.00;
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "{% url 'add_to_order' %}",
+                                            data: data,
+                                            dataType: "json",
+                                            beforeSend: function(xhr) {
+                                                xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                                                console.log(data, " working ");
+                                            },
+                                            success: function(response) {
+                                                console.log("Success:", response.message);
+                                                window.location.href = "/user/order_confirm/";
+                                            },
+                                            error: function(error) {
+                                                console.error("Error adding order:", error);
+                                                Swal.fire({
+                                                    title: 'Error!',
+                                                    text: 'There was an issue processing your order. Please try again.',
+                                                    icon: 'error',
+                                                    showConfirmButton: true
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                        };
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+                        console.log('Payment Failed Retry')
+                    },
+                    error: function(error) {
+                        console.error("Error initiating payment:", error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'There was an issue initiating the payment. Please try again.',
+                            icon: 'error',
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            } else if (selectedPayment === 'cod' || selectedPayment === 'wallet') {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'add_to_order' %}",
+                    data: data,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                        console.log(data, " working ");
+                    },
+                    success: function(response) {
+                        console.log("Success:", response.message);
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "/user/order_confirm/";
+                        });
+                    },
+                    error: function(error) {
+                        console.error("Error adding order:", error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'There was an issue processing your order. Please try again.',
+                            icon: 'error',
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            }
+    
+        });
+    
+        $("#add-to-wishlist-button").click(function(e) {
+            e.preventDefault();
+            var productId = $("#product-id").val();
+    
+            $.ajax({
+                url: "/add-to-wishlist/" + productId,
+                type: "POST",
+                dataType: "json",
+                success: function(data) {
+                    if (data.hasOwnProperty('message')) {
+                        if (data.message === "Product added to wishlist successfully!") {
+                            alert("Product added to wishlist!");
+                        } else {
+                            alert("Product already exists in your wishlist.");
+                        }
+                    } else {
+                        alert("An error occurred. Please try again later.");
+                    }
+                },
+                error: function(error) {
+                    console.error("Error adding product to wishlist:", error);
+                    alert("An error occurred. Please try again later.");
+                }
+            });
+        });
+    });
+    </script>
+    
+{% endblock extra_script %}

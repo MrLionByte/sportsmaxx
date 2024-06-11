@@ -1,0 +1,43 @@
+
+{% load static %}
+
+
+
+{% block load_product %}
+    {% for data in category_products %}
+    <div class="col-lg-4 col-md-6">
+        <div class="single-product">
+            <img class="img-fluid" src="{{ data.product_image.url }}" alt="">
+            <div class="product-details">
+                <h6>{{data.product_name}}</h6>
+                <div class="price">
+                    <h6>₹ {{ data.product_price_after }}</h6> 
+                    <h6 class="l-through">₹ {{ data.product_price }} </h6> 
+                </div>
+                  
+                <div class="prd-bottom">
+
+                    <a href="" class="social-info">
+                        <span class="ti-bag"></span>
+                        <p class="hover-text">add to bag</p>
+                    </a>
+                    <a href="" class="social-info">
+                        <span class="lnr lnr-heart"></span>
+                        <p class="hover-text">Wishlist</p>
+                    </a>
+                    <a href="" class="social-info">
+                        <span class="lnr lnr-sync"></span>
+                        <p class="hover-text">compare</p>
+                    </a>
+                    <a href="" class="social-info">
+                        <span class="lnr lnr-move"></span>
+                        <p class="hover-text">product details</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+{% endblock load_product %}

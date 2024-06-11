@@ -1,0 +1,73 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center align-items-center">
+<div class="row">
+  
+  {% for data in category_data %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <div class="card-body">
+        <h4 class="card-title text-center">Edit CATEGORY</h4>
+        <p class="card-description text-center"> Basic form elements </p>
+
+        <form class="forms-sample" method="post"  enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="category_id" value="{{ data.pk }}">	
+          <div class="form-group ml-3 mr-3">
+            <label for="exampleInputName1">Category Name</label>
+            <input type="text" name="categoryName" class="form-control" id="exampleInputName1" value="{{data.category_name}}">
+          </div>
+          <label for="exampleInputName1" class="ml-3">Change Image <b>↓</b></label>
+          <div class="form-group col-12 d-flex justify-content-between">
+          
+              <div class="m-3 d-flex justify-content-between">
+                {% if data.category_image %}
+                <input type="file" id="avatar" name="category_avatar" value="{{ data.category_image }}" accept="image/png, image/jpeg ,image/jpg" />
+                <p class="mt-4">Category Thumbnail  :</p>
+                <img id="category_img" style="width: 75px; height: 75px;" src="{{data.category_image.url}}" alt="">
+                {% else %}
+                <input type="file" id="avatar" name="category_avatar" value="" accept="image/png, image/jpeg ,image/jpg" />
+                {% endif %}
+              </div>         
+              <div class="m-3">
+                    <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    <a href="{% url 'admin_category' %}" class="btn btn-light">Cancel</a>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor category_data %}
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

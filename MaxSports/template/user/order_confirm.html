@@ -1,0 +1,133 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block header_name %}
+					<h1>Confirmation</h1>
+{% endblock header_name %}
+{% block section_data %}
+
+	<!--================Order Details Area =================-->
+<section class="order_details section_gap">
+    <div class="container">
+        <h3 class="title_confirmation">Thank you. Your order has been received.</h3>
+        <div class="row order_d_inner">
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Order Info</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Order number</span> : {{user_order.serial_number}}</a></li>
+                        <li><a href="#"><span>Order Date</span> : {{user_order.order_date|date:"DATE_FORMAT"}}</a></li>
+                        <li><a href="#"><span>Sub Total</span> : {{user_order.total_amount}}</a></li>
+                        <li><a href="#"><span>Payment method</span> : {{user_order.payment_method}}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Billing Address</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Street</span> :{{user_order.address.area}}</a></li>
+                        <li><a href="#"><span>City</span> : {{user_order.address.city}}</a></li>
+                        <li><a href="#"><span>State</span> : {{user_order.address.state}}</a></li>
+                        <li><a href="#"><span>Postcode </span> : {{user_order.address.pincode}}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Shipping Address</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Street</span> :{{user_order.address.area}}</a></li>
+                        <li><a href="#"><span>City</span> : {{user_order.address.city}}</a></li>
+                        <li><a href="#"><span>State</span> : {{user_order.address.state}}</a></li>
+                        <li><a href="#"><span>Postcode </span> : {{user_order.address.pincode}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="order_details_table">
+            <div class="d-flex justify-content-between">
+            <h2>Order Details</h2>
+            <h2 class="text-info">Status : Order Pending</h2>
+        </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       {% for product in user_order_items %}
+                        <tr>
+                            <td>
+                                <p>{{product.product_added}}</p>
+                            </td>
+                            <td>
+                                <h5>x {{product.quantity}}</h5>
+                            </td>
+                            <td>
+                                <p>{{product.final_product_price}}</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <td>
+                                <h4>Shipping</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                {% if user_order.total_amount < 4000 %}
+                                <p>Flat rate:  150.00</p>
+                                {% else %}
+                                <p>Free For You</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <p>Coupon Applied</p>
+                            </td>
+                            <td>
+                                <p>{{user_order.coupon_name}}</p>
+                            </td>
+                            <td>
+                                {% if user_order.coupon_name %}
+                                <p>{{user_order.coupon_discount}} off</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h4>Total</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                <p>{{user_order.total_amount}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="d-flex justify-content-center mt-4"><a href="{% url 'all_products_list' %}" type="button" class="btn btn-outline-primary">Continue Shopping</a></div>
+</section>
+<!--================End Order Details Area =================-->
+
+
+     
+{% endblock section_data %}
+{% block extra_script %}
+{% endblock extra_script %}

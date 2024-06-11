@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SPORTS-MAXX-admin</title>
+    <!-- plugins:css -->
+    <link rel="shortcut icon" href="{% static 'img/sport_max_fav.png' %}">
+
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <!-- End layout styles -->
+
+    {% block js_link_head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <style>
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      .table td,
+      .table th {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 16px;
+      }
+      
+      .table th {
+        background-color: #92c9e6;
+        color: #ffffff;
+      }
+      
+      .table tbody tr:nth-child(even) {
+        background-color: #d1e8f5;
+      }
+      
+      /*responsive*/
+      
+      @media (max-width: 500px) {
+        .table thead {
+          display: none;
+        }
+      
+        .table,
+        .table tbody,
+        .table tr,
+        .table td {
+          display: block;
+          width: 100%;
+        }
+        .table tr {
+          margin-bottom: 15px;
+        }
+        .table td {
+          padding-left: 50%;
+          text-align: left;
+          position: relative;
+        }
+        .table td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 0;
+          width: 50%;
+          padding-left: 15px;
+          font-size: 15px;
+          font-weight: bold;
+          text-align: left;
+        }
+      }
+      
+    </style>
+    {% endblock js_link_head %}
+
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo" href="{% url 'admin_dashboard' %}"><img src="{% static 'assets/images/admin_log_logo.png' %}" alt="logo" /></a>
+          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'assets/images/logo-mini.svg' %}" alt="logo" /></a>
+        </div>
+
+        {% block navbar_menu_wrapped %}
+
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          {% block search_option %}
+
+          {% endblock search_option %}
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item  dropdown d-none d-md-block">
+          
+            </li>
+            <li class="nav-item  dropdown d-none d-md-block">
+            
+            </li>
+            <li class="nav-item nav-language dropdown d-none d-md-block">
+             
+            </li>
+            <li class="nav-item nav-profile dropdown">
+              <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+                <div class="nav-profile-img">
+                  <img src="{% static 'assets/images/faces/face28.png' %}" alt="image">
+                </div>
+                {% if user.is_superuser %}
+                <div class="nav-profile-text">
+                  <p class="mb-1 text-black">{{user.username}}</p>
+                </div>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
+                <div class="p-3 text-center bg-primary">
+                  <img class="img-avatar img-avatar48 img-avatar-thumb" src="{% static 'assets/images/faces/face28.png' %}" alt="">
+                </div>
+                <div class="p-2">
+                  <h5 class="dropdown-header text-uppercase pl-2 text-dark">User Options</h5>
+                  <!-- <a class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                    <span>Inbox</span>
+                    <span class="p-0">
+                      <span class="badge badge-primary">3</span>
+                      <i class="mdi mdi-email-open-outline ml-1"></i>
+                    </span>
+                  </a> -->
+                  <!-- <a class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                    <span>Profile</span>
+                    <span class="p-0">
+                      <span class="badge badge-success">1</span>
+                      <i class="mdi mdi-account-outline ml-1"></i>
+                    </span>
+                  </a> -->
+                  <!-- <a class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="javascript:void(0)">
+                    <span>Settings</span>
+                    <i class="mdi mdi-settings"></i>
+                  </a> -->
+                  <!-- <div role="separator" class="dropdown-divider"></div>
+                  <h5 class="dropdown-header text-uppercase  pl-2 text-dark mt-2">Actions</h5>
+                  <a class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                    <span>Lock Account</span>
+                    <i class="mdi mdi-lock ml-1"></i>
+                  </a> -->
+                  <a class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                    <span>Log Out</span>
+                    <i class="mdi mdi-logout ml-1"></i>
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-email-outline"></i>
+                <span class="count-symbol bg-success"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown iew-list" aria-labelledby="messageDropdown">
+                <h6 class="p-3 mb-0 bg-primary text-white py-4">Messages</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="{% static 'assets/images/faces/face4.jpg' %}" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Mark send you a message</h6>
+                    <p class="text-gray mb-0"> 1 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="{% static 'assets/images/faces/face2.jpg' %}" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Cregh send you a message</h6>
+                    <p class="text-gray mb-0"> 15 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="{% static 'assets/images/faces/face3.jpg' %}" alt="image" class="profile-pic">
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Profile picture updated</h6>
+                    <p class="text-gray mb-0"> 18 Minutes ago </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <h6 class="p-3 mb-0 text-center">4 new messages</h6>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+                <i class="mdi mdi-bell-outline"></i>
+                <span class="count-symbol bg-danger"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                <h6 class="p-3 mb-0 bg-primary text-white py-4">Notifications</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-success">
+                      <i class="mdi mdi-calendar"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject font-weight-normal mb-1">Event today</h6>
+                    <p class="text-gray ellipsis mb-0"> Just a reminder that you have an event today </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-warning">
+                      <i class="mdi mdi-settings"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject font-weight-normal mb-1">Settings</h6>
+                    <p class="text-gray ellipsis mb-0"> Update dashboard </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-info">
+                      <i class="mdi mdi-link-variant"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                    <h6 class="preview-subject font-weight-normal mb-1">Launch Admin</h6>
+                    <p class="text-gray ellipsis mb-0"> New admin wow! </p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <h6 class="p-3 mb-0 text-center">See all notifications</h6>
+              </div>
+            </li>
+
+            {% block pagination %}
+            <li class="nav-item nav-language dropdown d-none d-md-block">
+              <nav aria-label="...">
+                {% if page_check != 'Next' %}
+                <ul class="pagination">
+                  <li class="page-item active" aria-current="page">
+                    <a class="page-link" >Previous</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="{% url 'admin_dashboard_page' %}?page_next=Next">Next</a>
+                  </li>
+                </ul>
+                {% else %}
+                <ul class="pagination">
+                  <li class="page-item" aria-current="page">
+                    <a class="page-link" href="{% url 'admin_dashboard_page' %}?page_next=None">Previous</a>
+                  </li>
+                  <li class="page-item active">
+                    <a class="page-link" aria-current="page">Next</a>
+                  </li>
+                </ul>
+                {% endif %}
+              </nav>
+            </li>
+              {% endblock pagination %}
+
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+        {% endblock navbar_menu_wrapped %}
+      </nav>
+
+
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item nav-category">Main</li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                <span class="icon-bg"><i class="mdi mdi-cube menu-icon"></i></span>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic1" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-account-circle menu-icon"></i></span>
+                <span class="menu-title">Customers</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic1">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_user_management' %}">Users</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_user_management_unlisted' %}">Blocked</a></li>
+                </ul>
+              </div>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic2" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-package-variant-closed menu-icon"></i></span>
+                <span class="menu-title">Products</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic2">
+                <ul class="nav flex-column sub-menu">
+
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_product' %}">Listed</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_product_unlisted' %}">Deleted</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_edit_variant' %}">Add Variants</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_add_size_qty' %}">Size & Qty</a></li>
+                  
+                </ul>
+              </div>
+            </li>
+           
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic3" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-view-list menu-icon"></i></span>
+                <span class="menu-title">Categories</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic3">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_category' %}">Listed</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_category_unlisted' %}">Deleted</a></li>
+                  
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic4" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-cart menu-icon"></i></span>
+                <span class="menu-title">Orders</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic4">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'order_processing' %}">Processing </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'order_delivered' %}">Delivered</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_pending_actions' %}">Pending actions</a></li>
+                </ul>
+              </div>
+            </li>
+
+
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic9" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-ticket-percent menu-icon"></i></span>
+                <span class="menu-title">Coupons</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic9">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_coupons' %}">Listed</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'coupons_expired' %}">Expired</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'admin_coupon_add' %}">Add Coupon</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic10" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-sale menu-icon"></i></span>
+                <span class="menu-title">Offer</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic10">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'category_offers' %}">Category</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'product_offers' %}">Product</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#ui-basic7" aria-expanded="false" aria-controls="ui-basic">
+                <span class="icon-bg"><i class="mdi mdi-bullhorn menu-icon"></i></span>
+                <span class="menu-title">Banners</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic7">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'show_banner' %}">Listed</a></li>
+                  <!-- <li class="nav-item"> <a class="nav-link" href="{% url 'admin_user_management_unlisted' %}"></a></li> -->
+                </ul>
+              </div>
+            </li>
+
+            <!-- <li class="nav-item documentation-link">
+              <a class="nav-link" href="http://www.bootstrapdash.com/demo/connect-plus-free/jquery/documentation/documentation.html" target="_blank">
+                <span class="icon-bg">
+                  <i class="mdi mdi-file-document-box menu-icon"></i>
+                </span>
+                <span class="menu-title">Documentation</span>
+              </a>
+            </li> -->
+            <li class="nav-item sidebar-user-actions mt-4">
+              <div class="user-details">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="d-flex align-items-center">
+                      <div class="sidebar-profile-img">
+                        <!-- <img src="{% static 'assets/images/faces/face28.png' %}" alt="image"> -->
+                      </div>
+                      <div class="sidebar-profile-text">
+                        <p class="mb-1">Admin : <b></b>{{user.username}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <!-- <li class="nav-item sidebar-user-actions">
+              <div class="sidebar-user-menu">
+                <a href="#" class="nav-link"><i class="mdi mdi-settings menu-icon"></i>
+                  <span class="menu-title">Settings</span>
+                </a>
+              </div>
+            </li> -->
+            <!-- <li class="nav-item sidebar-user-actions">
+              <div class="sidebar-user-menu">
+                <a href="#" class="nav-link"><i class="mdi mdi-speedometer menu-icon"></i>
+                  <span class="menu-title">Take Tour</span></a>
+              </div>
+            </li> -->
+            <li class="nav-item sidebar-user-actions">
+              <div class="sidebar-user-menu">
+                <a href="{% url 'admin_logout' %}" class="nav-link"><i class="mdi mdi-logout menu-icon"></i>
+                  <span class="menu-title">Log Out</span></a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        
+        <!-- partial -->
+        {% block dashboard %}
+        <div class="main-panel">
+          <div class="content-wrapper">
+            
+            <div class="d-xl-flex justify-content-between align-items-start">
+              <h2 class="text-dark font-weight-bold mb-2">SPORTS-MAXX  dashboard </h2>
+
+              <!-- <div class="d-sm-flex justify-content-xl-between align-items-center mb-2">
+                <div class="btn-group bg-white p-3" role="group" aria-label="Basic example">
+                  <button type="button" class="btn btn-link text-light py-0 border-right">7 Days</button>
+                  <button type="button" class="btn btn-link text-dark py-0 border-right">1 Month</button>
+                  <button type="button" class="btn btn-link text-light py-0">3 Month</button>
+                </div>
+                <div class="dropdown ml-0 ml-md-4 mt-2 mt-lg-0">
+                  <button class="btn bg-white dropdown-toggle p-3 d-flex align-items-center" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-calendar mr-1"></i>24 Mar 2019 - 24 Mar 2019 </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton1">
+                    <h6 class="dropdown-header">Settings</h6>
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+                  </div>
+                </div>
+              </div> -->
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <!-- <div class="d-sm-flex justify-content-between align-items-center transaparent-tab-border {">
+                  <ul class="nav nav-tabs tab-transparent" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link" id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Users</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Business</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Performance</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="conversion-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Conversion</a>
+                    </li>
+                  </ul>
+                  <div class="d-md-block d-none">
+                    <a href="#" class="text-light p-1"><i class="mdi mdi-view-dashboard"></i></a>
+                    <a href="#" class="text-light p-1"><i class="mdi mdi-dots-vertical"></i></a>
+                  </div>
+                </div> -->
+
+                <div class="tab-content tab-transparent-content">
+                  <div class="tab-pane fade show active" id="business-1" role="tabpanel" aria-labelledby="business-tab">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-6 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body text-center">
+                            <h5 class="mb-2 text-dark font-weight-normal">Orders completed</h5>
+                            <h2 class="mb-4 text-dark font-weight-bold">{% if orders_completed %}{{orders_completed}}{% else %}No order{% endif %}</h2>
+                            <div class="dashboard-progress dashboard-progress-1 d-flex align-items-center justify-content-center item-parent"><i class="mdi mdi-lightbulb icon-md absolute-center text-dark"></i></div>
+                            <p class="mt-4 mb-0">Orders</p>
+                            <h3 class="mb-0 font-weight-bold mt-2 text-dark">{% if no_of_orders %}{{no_of_orders}}{% else %}No order{% endif %}</h3>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xl-3 col-lg-6 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body text-center">
+                            <h5 class="mb-2 text-dark font-weight-normal">Unique Visitors</h5>
+                            <h2 class="mb-4 text-dark font-weight-bold">{{visitor_count}}</h2>
+                            <div class="dashboard-progress dashboard-progress-2 d-flex align-items-center justify-content-center item-parent"><i class="mdi mdi-account-circle icon-md absolute-center text-dark"></i></div>
+                            <p class="mt-4 mb-0"> since yesterday</p>
+                            <h3 class="mb-0 font-weight-bold mt-2 text-dark">{{Visitor_percentage}} %</h3>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xl-3  col-lg-6 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body text-center">
+                            <h5 class="mb-2 text-dark font-weight-normal">Sales Count</h5>
+                            <h2 class="mb-4 text-dark font-weight-bold">{{orders_completed}}</h2>
+                            <div class="dashboard-progress dashboard-progress-3 d-flex align-items-center justify-content-center item-parent">
+                              <i class="mdi mdi-tag icon-md absolute-center text-dark"></i></div>
+                            <p class="mt-4 mb-0">Sales done Today</p>
+                            <h3 class="mb-0 font-weight-bold mt-2 text-dark">{{sales_today}}</h3>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xl-3 col-lg-6 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body text-center">
+                            <h5 class="mb-2 text-dark font-weight-normal">Followers</h5>
+                            <h2 class="mb-4 text-dark font-weight-bold">4250k</h2>
+                            <div class="dashboard-progress dashboard-progress-4 d-flex align-items-center justify-content-center item-parent"><i class="mdi mdi-cube icon-md absolute-center text-dark"></i></div>
+                            <p class="mt-4 mb-0">Decreased since yesterday</p>
+                            <h3 class="mb-0 font-weight-bold mt-2 text-dark">25%</h3>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                      {% if page_check != 'Next' %}
+                    
+                    <div class="row d-flex justify-content-center">
+                      <div class="btn-group justify-content-end w-25 mb-4" role="group">
+                        <a type="button" class="btn btn-secondary" href="{% url 'admin_dashboard' %}?type=daily">Day</a>
+                        <a type="button" class="btn btn-secondary" href="{% url 'admin_dashboard' %}?type=monthly">Month</a>
+                        <a type="button" class="btn btn-secondary" href="{% url 'admin_dashboard' %}?type=yearly">Year</a>
+                      </div>
+                      <div class="d-flex flex-row-reverse ml-4">
+                        <div class="p-2" style="color: green;">Delivered</div>
+                        <div class="p-2" style="color: red;">Cancelled</div>
+                        <div class="p-2" style="color: darkred;">Returned</div>
+                      </div>
+                        <canvas id="mySalChart" style="width:100%;max-width:900px"></canvas>
+                    </div>
+
+                    <div class="row mt-5 mb-5">
+                      <div class="d-flex justify-content-between">
+                        <canvas id="myCatChart" style="width:100%;max-width:600px"></canvas>
+                        <canvas id="myProChart" style="width:100%;max-width:600px"></canvas>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col -4">
+                        <table class="table table-hover">
+                          <thead>
+                          <tr>
+                            <th style="background-color: black;">TOP</th>
+                            <th style="background-color: black;">CATEGORY </th>
+                          </tr>
+                          <tr>
+                            <th>Category</th>
+                            <th>Count</th>
+                          </tr>
+                        </thead>
+                          <tbody>
+                          {% for category,sold in top_selling_category.items %}
+                            <tr>
+                            <td>{{category}}</td>
+                            <td>{{sold}}</td>
+                          </tr>
+                            {% endfor %}    
+                        </tbody>
+                        </table>
+                      </div>
+                      <div class="col -4">
+                        <table class="table table-hover">
+                          <thead>
+                          <tr>
+                            <th style="background-color: black;">TOP</th>
+                            <th style="background-color: black;">PRODUCT</th>
+                          </tr>
+                          <tr>
+                            <th>Product</th>
+                            <th>Count</th>
+                          </tr>
+                        </thead>
+                          <tbody>
+                            {% for product,sold in top_selling_products.items %}
+                            <tr>
+                            <td>{{product}}</td>
+                            <td>{{sold}}</td>
+                          </tr>
+                            {% endfor %}    
+                        </tbody>
+                        </table>
+                      </div>
+                      <div class="col -4">
+                        <table class="table table-hover">
+                          <thead>
+                          <tr>
+                            <th style="background-color: black;">TOP</th>
+                            <th style="background-color: black;"> VARIANT</th>
+                          </tr>
+                          <tr>
+                            <th>Variant</th>
+                            <th>Count</th>
+                          </tr>
+                        </thead>
+                          <tbody>
+                            {% for variant,sold in top_selling_variants.items %}
+                            <tr>
+                            <td>{{variant}}</td>
+                            <td>{{sold}}</td>
+                          </tr>
+                            {% endfor %}   
+                        </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div class="row mt-5 d-flex justify-content-center">
+                        <canvas id="myOrdChart" style="width:100%;max-width:900px"></canvas>
+                    </div>
+
+                  <div class="row mb-3 d-flex justify-content-center">
+                    <canvas id="orderItemsChart" width="400" height="200"></canvas>
+                  </div>
+                  {% else %}
+                    <div class="row">
+                       <div class="d-sm-flex justify-content-xl-between align-items-center mb-2">
+                        <div class="btn-group bg-white p-3" role="group" aria-label="Basic example">
+                            <a type="button" class="btn btn-link text-light py-0 border-right" href="{% url 'admin_dashboard' %}?sort_id=now">Today</a>
+                            <a type="button" class="btn btn-link text-light py-0 border-right" href="{% url 'admin_dashboard' %}?sort_id=week">Week</a>
+                            <a type="button" class="btn btn-link text-light py-0 border-right" href="{% url 'admin_dashboard' %}?sort_id=month">Month</a>
+                            <a type="button" class="btn btn-link text-light py-0" href="{% url 'admin_dashboard' %}?sort_id=year">Year</a>
+                        </div>
+                      </div>
+                      <div class="dropdown ml-0 ml-md-4 mt-2 mt-lg-0">
+                        <button class="btn bg-white dropdown-toggle p-3 d-flex align-items-center" type="button" id="dropdownMenuButton1"
+                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-calendar mr-1">
+                          </i>Custom date</button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton1">
+                          <form action="{% url 'admin_dashboard' %}" method="post">
+                            {% csrf_token %}
+                            <label for="lower-date"> From date</label>
+                            <input type="date" class=" dropdown-item" name="starting" id="lower-date" placeholder="min price" autocomplete="off">
+                            <label for="upper-date"> Last date</label>
+                            <input type="date" class=" dropdown-item" name="ending" id="upper-date" placeholder="max price" autocomplete="off">
+                          <div class="dropdown-divider"></div>
+                          <button type="submit" class="dropdown-item">Filter</button>
+                        </form>
+                        </div>
+                      </div>
+                      {% if sales_report %}
+                      <div class="dropdown ml-5 ml-md-4 mt-2 mt-lg-0 d-flex justify-content-end">
+                        <a href="{% url 'sales_report_excel' %}">
+                        <img width="25" height="25" src="https://img.icons8.com/ios-glyphs/25/ms-excel.png" alt="ms-excel"/>
+                      </a>
+                        <a href="{% url 'download_report_in_pdf' %}">
+                        <img width="25" height="25" src="https://img.icons8.com/wired/64/pdf.png" alt="pdf"/>
+                      </a>
+                    </div>
+                    {% endif %}
+
+                      <table class="table mb-5">
+                        <thead>
+                          <th>Order_ID</th>
+                          <th>Product</th>
+                          <th>Customer</th>
+                          <th>Applied Coupon</th>
+                          <th>Discount Price</th>
+                          <th>Order Date</th>
+                        </thead>
+                        <tbody>
+                          {% if sales_report %}
+                          {% for sales in sales_report %}
+                          <tr>
+                            <td data-label="S.No">{{sales.order.serial_number}}</td>
+                            <td data-label="Name">{{sales.product_added}}</td>
+                            <td data-label="Age">{{sales.order.user_id}}</td>
+                            <td data-label="Marks%">{{sales.order.coupon_discount}}</td>
+                            <td data-label="Staus">{{sales.final_product_price}}</td>
+                            <td data-label="Staus">{{sales.order.order_date|date:"d/m/Y" }}</td>
+                          </tr>
+                          {% endfor %}
+                          {% else %}
+                          <h5 class="text-dark">No Data Available </h5>
+                          {% endif %}
+                        </tbody>
+                      </table>
+                          <div class="d-flex justify-content-center">
+                              <p class="ml-5">Total Sales Count :{{over_all_sales}}</p><br>
+                              <p class="ml-5">Total Discount :{{over_all_discount}}</p><br>
+                              <p class="ml-5">Total Price :{{over_all_price}}</p>
+                        </div>
+                    </div>
+                  {% endif %}
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% endblock dashboard %}
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    {% block js_scripts %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script type="text/javascript">
+      //const xSalValues = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      //const xSalValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+      const xSalValues = [{% for item in year_of_sale %} '{{ item }}', {% endfor %}];
+      const ySalValuesDel = [{% for item in sales_report_delivered %} '{{ item }}', {% endfor %}];
+      const ySalValuesCan = [{% for item in sales_report_cancelled %} '{{ item }}', {% endfor %}];
+      const ySalValuesRet = [{% for item in sales_report_returned %} '{{ item }}', {% endfor %}];
+      
+      new Chart("mySalChart", {
+        type: "line",
+        data: {
+          labels: xSalValues,
+          datasets: [{ 
+            data: ySalValuesRet,
+            borderColor: "darkred",
+            fill: false
+          }, { 
+            data: ySalValuesDel,
+            borderColor: "green",
+            fill: false
+          }, { 
+            data: ySalValuesCan,
+            borderColor: "red",
+            fill: false
+          }]
+        },
+        options: {
+          legend: {display: false}
+        }
+      });
+
+      //var xCatValues = JSON.parse('{{ category_names|escapejs }}');
+      var xCatValues = ["Football", "Cricket", "Athletics", "Apr", "May","Jun", "Jul", "Aug", "Sep", "Oct"];
+      //var categoryNames = JSON.parse('{{ category_names|escapejs }}');
+      //var totalSoldValues = JSON.parse('{{ total_sold_values|escapejs }}');
+      var yCatValues = [85, 49, 44, 24, 15];
+      //var barColors = ["red", "green","blue","orange","brown"];
+      var barColors = "blue";
+      
+      new Chart("myCatChart", {
+        type: "bar",
+        data: {
+          labels: [{% for item in category_names %} '{{ item }}', {% endfor %}],
+
+          datasets: [{
+            backgroundColor: barColors,
+            data: [{% for item in total_sold_values %} '{{ item }}', {% endfor %}],
+          }]
+        },
+        options: {
+          legend: {display: false},
+          title: {
+            display: true,
+            text: "Top Category"
+          }
+        }
+      });
+      
+     // var xProValues = ["Jan", "Feb", "Mar", "Apr", "May","Jun", "Jul", "Aug", "Sep", "Oct"];
+      var yProValues = [85, 49, 44, 24, 15];
+      //var barColors = ["red", "green","blue","orange","brown"];
+      var barColors = "blue";
+      
+      new Chart("myProChart", {
+        type: "bar",
+        data: {
+          labels: [{% for item in top_product_names %} '{{ item }}', {% endfor %}],
+          datasets: [{
+            backgroundColor: barColors,
+            data: [{% for item in top_product_sold_values %} '{{ item }}', {% endfor %}],
+          }]
+        },
+        options: {
+          legend: {display: false},
+          title: {
+            display: true,
+            text: "Top Products"
+          }
+        }
+      });
+
+    var orderItemsFiltered = JSON.parse('{{ order_items_filtered|escapejs }}');
+
+    var xOrdValues = ["Confirmed", "Shipped", "Out For Delivery", "Delivered", "Cancelled", "Returned"];
+    var barColors = [
+        '#ffc40d',
+        "#2b5797",
+        "#00aba9",
+        "#1e7145",
+        "#ee1111",
+        "#b91d47",
+    ];
+
+    new Chart("myOrdChart", {
+        type: "doughnut",
+        data: {
+            labels: xOrdValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: orderItemsFiltered
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Order Status Distribution"
+            }
+        }
+    });
+      </script>
+
+    {% endblock js_scripts %}
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'assets/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/jquery-circle-progress/js/circle-progress.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <!-- End custom js for this page -->
+  </body>
+</html>

@@ -1,0 +1,84 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <script>
+        swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+        </script>
+        {% elif message.tags == 'success' %}
+        <script>
+        swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+        </script>
+        {% else %}
+        <script>
+        swal("Message", "{{ message }}"); // Display general message
+        </script>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+      <div class="card-body">
+        <h4 class="card-title text-center">ADD BANNER</h4>
+        <form class="forms-sample" method="get" action="{% url 'add_banner'  %}" >                
+                {% csrf_token %}
+                <div class="form-group ml-3 mr-3">
+                  <label for="exampleInputName1">Banner name</label>
+                  <input type="text" name="banner_name" class="form-control" required id="exampleInputName1" placeholder="Banner Name">
+                </div>
+                <div class="form-group col-12 d-flex justify-content-between">
+                      
+                  <label for="exampleInputPassword4">Select Product</label>
+                    <select name="product" class="m-1">
+                        {% for pro in product %}
+                        <option value="{{ pro.id }}">{{ pro }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group ml-2 mr-2">
+                    <label for="exampleTextarea1">Description</label>
+                    <textarea class="form-control" name="product_description" id="exampleTextarea1" rows="4"></textarea>
+                </div>
+
+                <div class="form-group col-12 d-flex justify-content-between">
+                  <div class="col-6">
+                    <label for="discountPercentage">Start Date</label>
+                    <input type="Date" name="start" class="form-control" required id="discountPercentage" placeholder="dd-mm-yyyy" autocomplete="off">
+                  </div>
+                  <div class="col-6">
+                    <label for="exampleInputPassword4">Expiry Date</label>
+                    <input type="Date" name="expiry" class="form-control" id="exampleInputPassword4" placeholder="dd-mm-yyyy" autocomplete="off">
+                  </div>
+                </div>
+
+                <!-- <p class="card-description text-center text-danger">  !!!</p> -->
+                <button type="submit" class="btn btn-primary m-3">Submit</button>
+                <a href="{% url 'show_banner' %}" class="m-3 btn btn-light">Cancel</a>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}
+
+{% block js_scripts %}
+   
+{% endblock js_scripts %}

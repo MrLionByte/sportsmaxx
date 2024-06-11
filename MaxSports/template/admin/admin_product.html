@@ -1,0 +1,222 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<style>
+  
+  .dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  
+  </style>
+
+{% endblock js_link_head %}
+
+
+{% block search_option %}
+<div class="search-field d-none d-xl-block">
+  <form class="d-flex align-items-center h-100" action="{% url 'admin_product' %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+        <div class="input-group-prepend bg-transparent">
+          <i class="input-group-text border-0 mdi mdi-magnify"></i>
+          </div>
+        <input type="text" class="form-control bg-transparent border-0" name="search" aria-label="Search" aria-describedby="search-addon" 
+        placeholder="Search Product" aria-label="Search" autocomplete="off">
+      </div>
+  </form>
+</div>
+{% endblock search_option %}
+
+{% block pagination %}
+{% endblock pagination %}
+
+{% block dashboard %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+    <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between ">
+            <div>
+              <h4 class="card-title">All Products</h4>
+            </div>
+            <div class="dropdown ">
+              <button class="dropbtn">Sort</button>
+              <div class="dropdown-content">
+                 <a href="{% url 'admin_product' %}?sort_id=1">A-Z</a>
+                 <a href="{% url 'admin_product' %}?sort_id=2">Latest</a>
+                <a href="{% url 'admin_product' %}?sort_id=3">Category</a>
+                <a href="{% url 'admin_product' %}?sort_id=4">High-Low</a>
+                <a href="{% url 'admin_product' %}?sort_id=5">Low-high</a>
+              </div>
+            </div>
+              <!-- <p>Sort by  :
+                  <a href="{% url 'admin_product' %}?sort_id=1">category</a>
+                  <a href="{% url 'admin_product' %}?sort_id=2">name</a>
+                  <a href="{% url 'admin_product' %}?sort_id=3">last added</a>
+              </p> -->
+            <a href="{% url 'admin_add_product' %}"><button type="button" class="btn btn-outline-success">ADD</button></a>
+          </div>
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+              <h5 class="text-danger">{{message}}</h5>
+          {% elif message.tags == 'success' %}
+              <h5 class="text-success">{{message}}</h5>
+          {% else %}
+              <h5 class="text-warning">{{message}}</h5>
+          
+          {% endif %}
+      {% endfor %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Product.Id </th>
+                  <th> Name </th>
+                  <th> Category </th>
+                  <th> Price </th>
+                  <th class="text-center"> Action </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for data in products_data %}
+                <tr>
+                  <td>  {{forloop.counter}} </td>
+                  <td> {{data.product_name}} 
+                    <span class="pr-5">
+                      
+                    </span>
+                  </td>
+                  <td> {{data.category_id.category_name}} </td>
+                  
+                  <td> {{data.product_price}} </td>
+                        <td class="d-flex justify-content-between">
+                     
+                            <a href="{% url 'admin_details_product' data.pk %}" class="ml-2">
+                             <button type="button" class="btn btn-outline-info" data-bs-toggle="button" aria-pressed="true">Details</button></a> 
+                    
+                                  <a href="{% url 'admin_edit_product' data.pk %}" class="ml-2">
+                                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="button" aria-pressed="true">Edit</button></a>  
+                                  
+                                  <a href="#deleteEmployeeModal-{{forloop.counter}}" class="delete ml-2" data-toggle="modal">
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">🗑️</button>
+
+                                      {% if data.product_list %}
+                                        <a class="ml-2" href="{% url 'admin_productStatus_unlist' data.pk %}">
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Unlist</button></a>	
+                                        {% else %}
+                                        <a class="ml-2" href="{% url 'admin_productStatus_list' data.pk %}">
+                                        <button type="button" class="btn btn-outline-success" data-bs-toggle="button" aria-pressed="true">List</button></a>	  
+                                      {% endif %}
+                        
+                    </td>
+                </tr>
+                {% endfor products_data %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+    
+    
+    
+    <!-- Delete Modal HTML -->
+    {% for data in products_data %}
+    <div id="deleteEmployeeModal-{{ forloop.counter }}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'admin_unlist_product' data.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Delete Category</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                      <div class="modal-body">				
+                        <p>Are you sure you want to delete <span class="text-danger">{{data.to_show}}</span> ?</p>	
+                      </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="product_id" value="{{ data.id }}">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+
+{% endblock dashboard %}
+

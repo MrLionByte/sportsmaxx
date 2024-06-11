@@ -1,0 +1,143 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between ">
+        <h4 class="card-title">Categories</h4>
+        <a href="{% url 'admin_add_category' %}"><button type="button" class="btn btn-outline-success">ADD</button></a>
+      </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th> Sl.No </th>
+              <th> Category </th>
+              <th> Image </th>
+              <th>Type</th>
+              <th> Created_at </th>
+              <th> Listed_at </th>
+              <th class="text-center"> Action </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in category_data %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td> {{data.category_name}} </td>
+			  {% if data.category_image %}
+              <td><img style="width: 50px; height: 50px;" src="{{data.category_image.url}}" alt=""> </td>
+			  {% else %}
+			  <td><p>No Image</p></td>
+			   {% endif %}
+              <td> {{data.types_available}} </td>
+              <td>  {{data.created_at}}  </td>
+              <td>  {{data.updated_at}}  </td>
+              <td class="d-flex justify-content-between">
+
+                <a href="{% url 'admin_edit_category' data.pk %}">
+                <button type="button" class="btn  btn-outline-primary" data-bs-toggle="button" aria-pressed="true">Edit</button></a>  
+				
+				{% if data.is_listed %}
+				 <a class="ml-2" href="{% url 'admin_UnList_category' data.pk %}">
+                <button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">List</button></a>
+				{% else %}
+				<a class="ml-2" href="{% url 'admin_List_category' data.pk %}">
+				<button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">UnList</button></a>	
+				{% endif %}
+
+				<a href="#deleteEmployeeModal-{{forloop.counter}}" class="delete" data-toggle="modal">
+				<button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Delete</button>
+
+				</a>
+              </td>
+            </tr>
+            {% endfor category_data %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Delete Modal HTML -->
+{% for data in category_data %}
+<div id="deleteEmployeeModal-{{ forloop.counter }}" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+      {% if data.category_delete %}
+			<form method="post" action="{% url 'admin_undo_category' data.pk %}">
+      
+				{% csrf_token %}
+				<div class="modal-header">						
+					<h4 class="modal-title">Delete Category</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">				
+					<p>Are you sure you want to delete <span class="text-danger">{{data.category_name}}</span> ?</p>	
+        </div>
+				<div class="modal-footer">
+					<input type="hidden" name="category_id" value="{{ data.pk }}">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</div>
+
+			</form>
+      {% else %}
+      <form method="post" action="{% url 'admin_delete_category' data.pk %}">
+
+        {% csrf_token %}
+				<div class="modal-header">						
+					<h4 class="modal-title">undo delete Category</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">				
+					<p>Are you sure you want to undo <span class="text-danger">{{data.category_name}}</span> ?</p>	
+        </div>
+				<div class="modal-footer">
+					<input type="hidden" name="category_id" value="{{ data.pk }}">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					<button type="submit" class="btn btn-danger">Undo</button>
+				</div>
+
+        </form>
+        {% endif %}
+		</div>
+	</div>
+</div>
+{% endfor %}
+
+
+{% endblock dashboard %}
+

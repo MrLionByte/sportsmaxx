@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - SportsMaxx</title>
+    <link rel="stylesheet" href="styles.css">
+	<style>
+	body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.invoice-box {
+    max-width: 800px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #eee;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    font-size: 16px;
+    line-height: 24px;
+    color: #555;
+}
+
+.invoice-box table {
+    width: 100%;
+    line-height: inherit;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+.invoice-box table td {
+    padding: 5px;
+    vertical-align: top;
+}
+
+.invoice-box table tr td:nth-child(2) {
+    text-align: right;
+}
+
+.invoice-box table tr.top table td {
+    padding-bottom: 20px;
+}
+
+.invoice-box table tr.top table td.title {
+    font-size: 16px;
+    line-height: 25px;
+    color: #333;
+}
+
+.invoice-box table tr.information table td {
+    padding-bottom: 40px;
+}
+
+.invoice-box table tr.heading td {
+    background: #eee;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.invoice-box table tr.details td {
+    padding-bottom: 20px;
+}
+
+.invoice-box table tr.item td {
+    border-bottom: 1px solid #eee;
+}
+
+.invoice-box table tr.item.last td {
+    border-bottom: none;
+}
+
+.invoice-box table tr.total td:nth-child(2) {
+    border-top: 2px solid #eee;
+    font-weight: bold;
+}
+
+	</style>
+</head>
+<body>
+  <a href="{% url 'download_invoice' serial_number=order_details.order.serial_number %}" class="m-5">
+    <img width="25" height="25" src="https://img.icons8.com/glyph-neue/25/download--v1.png" 
+    alt="download--v1"/>
+  </a>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <h1>SportsMaxx</h1>
+                                <img src="{% static 'img/sortsMax_logo.png' %}" alt="">
+                            </td>
+                            
+                            <td>
+                                <h3 style="color: red;">Invoice</h3><br> 
+								order no: {{order_details.order.serial_number}}<br>
+                                O D: {{order_details.order.order_date |date:"M d,Y" }}<br>
+                                L A T: {{order_details.last_update |date:"M d,Y" }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                {{order_details.order.address.full_name}} <br>
+                                {{order_details.order.address.pincode}}  {{order_details.order.address.post_office}}<br>
+                                {{order_details.order.address.area}}, {{order_details.order.address.city}} <br>
+								{{order_details.order.address.state}} 
+                            </td>
+                            
+                            <td>
+                                SportsMaxx<br>
+                                Kozhikode, Kerala <br>
+                                support@sportsmaxx.com
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr class="heading">
+                <td>
+                    Payment Method
+                </td>
+                
+                <td>
+                    Transaction ID
+                </td>
+            </tr>
+            
+            <tr class="details">
+                <td>
+					{{order_details.order.payment_method}}
+                </td>
+                
+                <td>
+                    {{order_details.order.payment_online_id}}
+                </td>
+            </tr>
+            
+            <tr class="heading">
+                <td>
+                    Item x Quantity
+                </td>
+                
+                <td>
+                    Price
+                </td>
+            </tr>
+                {% for order in order_details_all %}
+            <tr class="item">
+                <td>
+                    {{order.product_added}} x {{order.quantity}}  ()
+                </td>
+                
+                <td>
+                    ₹ {{order.final_product_price}}
+                </td>
+            </tr>
+				{% endfor %}
+			
+            <tr class="total">
+                <td>
+				Coupons Applied
+				</td>
+                
+                <td>
+                  ({{order_details.order.coupon_name}})  {{order_details.order.coupon_discount}} -
+                </td>
+            </tr>
+			  <tr class="total">
+                <td>
+				Shipping &amp; Handling
+				</td>
+                <td>
+                  {% if order_details.order.total_amount < 4000 %}
+                  ₹ 150.00
+          {% else %}
+          Free for you
+          {% endif %} 
+                </td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                
+                <td>
+                   Total(Incl.Tax): ₹  {{order_details.order.total_amount}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

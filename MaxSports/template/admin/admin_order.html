@@ -1,0 +1,153 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<style>
+
+.dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+  {% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between ">
+        <h4 class="card-title">All Orders</h4>
+        <div class="dropdown ">
+          <!-- <button class="dropbtn">Sort</button>
+          <div class="dropdown-content">
+             <a href="{% url 'admin_product' %}?sort_id=1">Pending Actions</a>
+             <a href="{% url 'admin_product' %}?sort_id=2">Latest</a>
+            <a href="{% url 'admin_product' %}?sort_id=3">Old</a> -->
+          </div>
+        </div>
+      </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th> Order no </th>
+              <th> User </th>
+              <th> Product </th>
+              <th> date of order </th>
+              <th> Status </th>
+              <th> Amount </th>
+              <th class="text-center"> Action </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for order in orders %}
+              <td><a href="{% url 'order_details' order.id %}">{{order.order.serial_number}}</a></td>
+              <td> {{order.order.user_id}} </td>
+              <td><a href="{% url 'order_invoice' serial_number=order.order.serial_number %}">
+                <span class="icon-bg"><i class="mdi mdi-file-document-outline menu-icon"></i></span>
+              </a>
+                 {{order.product_added}} </td>
+              <td> {{order.order.order_date|date:'d-m-y'}} </td>
+              <td> {{order.status}} </td>
+              <td> {{order.final_product_price}} </td>
+              <td class="d-flex justify-content-between"> 
+                  {% if order.status == 'Order Pending' and not order.cancel_return_confirm %}
+                  <a href="{% url 'order_confirmation' order_id=order.id %}?next={{ request.path }}">
+                    <button type="button" class="btn  btn-outline-warning" data-bs-toggle="button" aria-pressed="true">Approve<br>order</button></a>
+                  {% elif order.accept_order and order.cancel_return_confirm and order.status != 'Cancelled' and order.status != 'Delivered' and order.status != 'Returned' %}
+                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}"><button type="button" class="btn  btn-outline-danger"
+                    data-bs-toggle="button" aria-pressed="true">Confirm <br>Cancel</button></a>
+                  {% elif order.cancel_return_confirm and order.status == 'Cancelled' %}
+                    <p class="text-danger">Order Cancelled</p>
+                  {% elif order.cancel_return_confirm and order.status == 'Returned' %}
+                    <p class="text-danger">Returned</p>
+                  {% elif order.cancel_return_confirm and not order.accept_order %}
+                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}"><button type="button" class="btn  btn-outline-danger"
+                    data-bs-toggle="button" aria-pressed="true">Confirm <br>Cancel</button></a>
+                  {% else %}
+                  <p class="text-warning">No action</p>
+                  {% endif %}
+                
+                <!-- <a class="" href="">
+                <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true"></button></a> -->
+             </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

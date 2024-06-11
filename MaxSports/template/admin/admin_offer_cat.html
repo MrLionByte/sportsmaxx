@@ -1,0 +1,220 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<style>
+
+.dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+  {% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between ">
+        <h4 class="card-title">CATEGORY OFFERS</h4>
+       
+      </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>SL.No </th>
+              <th> Category Name </th>
+              <th>Category offer</th>
+              <th class="text-center"> Action </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cat in category_for_offer %}
+            <tr>
+              <td>{{ forloop.counter}}</td>
+              <td>{{ cat.category_name }}</td>
+              <td id="offerPercentage_{{ cat.id }}">{{ cat.offer_percentage }}%</td>
+              <td class="d-flex justify-content-center">
+                          <button class="btn btn-danger edit-button" data-toggle="modal" data-target="#editModal" data-category-id="{{ cat.id }}" 
+                          data-offer-percentage="{{ cat.offer_percentage }}">EDIT</button></td>
+            </tr>
+            {% endfor %}
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Offer Percentage</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          <div class="form-group">
+            <label for="offerPercentage">Offer Percentage (%)</label>
+            <input type="number" class="form-control" id="offerPercentage"  min="0" max="100" name="offerPercentage" placeholder="Enter new offer percentage">
+          </div>
+          <input type="hidden" id="categoryId" name="categoryId">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock dashboard %}
+{% block js_scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Function to get CSRF cookie value
+      function getCSRFToken() {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = cookies[i].trim();
+                  // Check if the cookie name is 'csrftoken'
+                  if (cookie.substring(0, 10) === 'csrftoken=') {
+                      // Extract and return the cookie value
+                      cookieValue = decodeURIComponent(cookie.substring(10));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+  
+      // Click event handler for the edit button
+      $('.edit-button').click(function() {
+          var categoryId = $(this).data('category-id');
+          var offerPercentage = $(this).data('offer-percentage');
+          console.log('Clicked on edit button. Category ID:', categoryId, 'Offer Percentage:', offerPercentage);
+          $('#categoryId').val(categoryId);
+          $('#offerPercentage').val(offerPercentage);
+      });
+  
+      // Click event handler for the save changes button
+      $('#saveChangesBtn').click(function() {
+          var categoryId = $('#categoryId').val();
+          var offerPercentage = $('#offerPercentage').val();
+          console.log('Saving changes. Category ID:', categoryId, 'Offer Percentage:', offerPercentage);
+          // Get CSRF token
+          var csrfToken = getCSRFToken();
+          // Send data to backend using AJAX with CSRF token included in headers
+          $.ajax({
+              url: '/edit_category_offers/',
+              method: 'POST',
+              headers: {
+                  'X-CSRFToken': csrfToken
+              },
+              data: {
+                  categoryId: categoryId,
+                  offerPercentage: offerPercentage
+              },
+              success: function(response) {
+                  // Handle success response
+                  console.log('AJAX request successful. Response:', response);
+                  // Update offer percentage in the HTML
+                  var newOfferPercentage = response.new_offer_percentage; // Assuming your response includes the updated offer percentage
+                  $('#offerPercentage_' + categoryId).text(newOfferPercentage + '%');
+                  // Optionally, close the modal
+                  $('#editModal').modal('hide');
+                  // Reload the page
+                  location.reload();
+              },
+              error: function(xhr, errmsg, err) {
+                  // Handle error
+                  console.log('AJAX request failed. Error:', xhr.status + ": " + xhr.responseText);
+              }
+          });
+      });
+  });
+  
+  
+  </script>
+
+{% endblock js_scripts %}

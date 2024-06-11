@@ -1,0 +1,236 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+<style>
+
+.dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+  {% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+    <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between ">
+            <h4 class="card-title">Order Details of {{order_details.order}} , {{order_details.product_added}}</h4><span class="text-dark">Ordered by : {{order_details.order.user_id}}</span>
+            <a href="{% url 'order_processing' %}"><button type="button" class="btn btn-outline-success">Go back</button></a>
+          </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Order no </th>
+                  <th> Product </th>
+                  <th> date of order </th>
+                  <th> Amount </th>
+                  <th>Status</th>
+                  <th class="text-center"> Action </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{order_details.order.serial_number}}</td>
+                  <td> {{order_details.product_added}} </td>
+                  <td> {{order_details.order.order_date|date:'d-m-y'}} </td>
+                  <td>  {{order_details.final_product_price}} </td>
+                  <td style="color: brown;">
+                    {% if order_details.status == 'Order Pending' %}
+                            {{order_details.status}}
+                            <p class="text-danger">To Approve</p>
+                    {% else %} 
+                    {{order_details.status}}
+                    {% endif %}
+                </td>
+                  <td class="d-flex justify-content-center">
+              
+                    {% if not order_details.accept_order and not order_details.cancel_return_confirm and order_details.status != 'Returned' and order_details.status != 'Cancelled' %}
+                    <a href="{% url 'order_confirmation' order_details.id %}?next={{ request.path }}">
+                        <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Approve <br>Order</button>
+                    </a>
+                    {% elif order_details.cancel_return_confirm and not order_details.status == 'Delivered' and order_details.status != 'Returned' %}
+                    <a href="{% url 'order_cancel_approval' order_details.id %}?next={{ request.path }}">
+                      <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Cancel <br>Order</button>
+                  </a>
+                    {% elif order_details.cancel_return_confirm and order_details.status != 'Cancelled' and order_details.status != 'Returned' %}
+                    <a href="{% url 'order_cancel_approval' order_details.id %}?next={{ request.path }}">
+                      <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Return <br>Confirm</button>
+                  </a>
+                      {% else %}
+                        <p class="text-info">No Action <br>Pending</p>
+                      {% endif %} 
+
+                    
+                    <!-- <a class="" href="">
+                    <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true"></button></a> -->
+                 </td>
+                </tr>
+
+              </tbody>
+              <thead>
+                <tr>
+                  <th>Thumbnail</th>
+                  <th> Coupon </th>
+                  <th> Quantity </th>
+                  <th> Size </th>
+                  <th>Pay Using</th>
+                  <th class="text-center"> Action </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+
+                  <td><img style="width: 100px; height:100px;" src="{{ order_details.product_added.image_first.url }}" alt=""></td>
+                  <td> {{order_details.order.coupon_applied}} </td>
+                  <td> {{order_details.quantity}} </td>
+                  <td> {{order_details.size}} </td>
+                  <td>      {{order_details.order.payment_method}}         </td>
+                  <td class="d-flex justify-content-center"> 
+                    <div class="dropdown ">
+                      {% if order_details.status == 'Order Pending' %}
+                      <p>Order not accepted</p>
+                      {% else %}
+                      <form id="statusForm" method="POST" action="{% url 'order_status_change' %}?next={{ request.path }}">
+                        {% csrf_token %}
+                        <input type="text" name="order_id" hidden value="{{order_details.id}}">
+                        <select id="statusSelect" name="status" onchange="showConfirmation(this)">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-expanded="false">Change Status</button>
+                      
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                  {% if not order_details.status == 'Delivered' %}
+                                  {% for status in status_choices %} 
+                                  <li><option value="{{ status }}">{{ status }}</option></li>
+                                  {% endfor %}
+                                  {% else %}
+                                  <li><option >Delivered</option></li>
+                                  <li><option value="Returned">Returned</option></li>
+                                  {% endif %}
+                                  {% if not status_choices %}
+                                  <li><option >No action</option></li>
+                                  {% endif %}
+                                </ul>    
+                              </select>
+                            </form>
+                        
+                            {% endif %} 
+                    </div>
+                    
+                    <!-- <a class="" href="">
+                    <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true"></button></a> -->
+                 </td>
+                </tr>
+                    
+                
+              </tbody>
+            </table><br><br>
+            <h6 class="text-info">Delivery Address</h6>
+              <p class="text-dark">{{order_details.order.address.full_name}} ,</p>
+              <p class="text-dark">{{order_details.order.address.address_type}}, {{order_details.order.address.landmark}}, {{order_details.order.address.accessible}}</p>
+              <p class="text-dark">{{order_details.order.address.area}}, {{order_details.order.address.post_office}}, {{order_details.order.address.pincode}}</p>
+              <p class="text-dark">{{order_details.order.address.city}}, {{order_details.order.address.state}},</p>
+              <p class="text-dark">{{order_details.order.address.phone_no}}, {{order_details.order.address.alternative_phone}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+{% endblock dashboard %}
+
+{% block js_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script>
+  function showConfirmation(selectElement) {
+    swal({
+      title: "Change Status",
+      text: "Are you sure you want to change the status?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willChange) => {
+      if (willChange) {
+        // Submit the form if the user confirms
+        document.getElementById('statusForm').submit();
+      } else {
+        // Reset the select element to its previous value if the user cancels
+        selectElement.value = "{{ order_details.status }}";
+      }
+    });
+  }
+</script>
+{% endblock js_scripts %}

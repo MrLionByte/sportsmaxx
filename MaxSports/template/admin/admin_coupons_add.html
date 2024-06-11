@@ -1,0 +1,103 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <script>
+        swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+        </script>
+        {% elif message.tags == 'success' %}
+        <script>
+        swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+        </script>
+        {% else %}
+        <script>
+        swal("Message", "{{ message }}"); // Display general message
+        </script>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+      <div class="card-body">
+        <h4 class="card-title text-center">ADD COUPON</h4>
+        <p class="card-description text-center"> Without max limit and min limit , it will will be applicable for any price</p>
+        <form class="forms-sample" method="post" action="{% url 'admin_coupon_add'  %}" >                
+                {% csrf_token %}
+                <div class="form-group ml-3 mr-3">
+                  <label for="exampleInputName1">Coupon Title</label>
+                  <input type="text" name="coupon_title" class="form-control" required id="exampleInputName1" placeholder="Coupon Name">
+                </div>
+                <div class="form-group col-12 d-flex justify-content-between">
+                      <div class="col-4">
+                  <label for="exampleInputPassword4">Min Limit</label>
+                  <input type="number" name="min_price" required class="form-control" id="exampleInputPassword4" placeholder=" ₹ " autocomplete="off">
+                      </div>
+                      <div class="col-4">
+                  <label for="exampleInputPassword4">Max Limit</label>
+                  <input type="number" name="max_price" class="form-control" id="exampleInputPassword4" placeholder=" ₹ " autocomplete="off">
+                      </div>
+                      <div class="col-4">
+                        <label for="exampleInputPassword4">Valid From Date</label>
+                        <input type="Date" name="valid" class="form-control" required id="exampleInputPassword4" placeholder="dd-mm-yyyy" autocomplete="off">
+                      </div>
+                </div>
+
+                <!-- <div class="form-group ml-2 mr-2">
+                  <label for="exampleInputName1">Manual Coupon Code</label>
+                  <input type="text" name="code" class="form-control" id="exampleInputName1" autocomplete="off"
+                  placeholder="Coupon Code (If you don't add, this will automated)">
+                </div> -->
+
+                <div class="form-group col-12 d-flex justify-content-between">
+                  <div class="col-4">
+              <label for="exampleInputPassword4">Expiry Date</label>
+              <input type="Date" name="expiry" class="form-control" id="exampleInputPassword4" placeholder="dd-mm-yyyy" autocomplete="off">
+                  </div>
+                  <div class="col-4">
+              <label for="discountPercentage">Discount Percentage/Amount</label>
+              <input type="number" min="0" name="discountPercentage" class="form-control" required id="discountPercentage" placeholder="%  or   ₹" autocomplete="off">
+                  </div>
+                  <div class="col-4">
+
+                    <label for="percentage" style="margin-left: 15px;">Percentage</label>
+                    <input  type="radio" id="percentage" required name="choice" value="per"/><br>
+                    <label for="amount" style="margin-left: 15px;">Amount</label>
+                    <input  type="radio" id="amount" required name="choice" value="amt"/>
+                  </div>
+
+                </div>
+
+                <p class="card-description text-center text-danger">  !!!</p>
+                <button type="submit" class="btn btn-primary m-3">Submit</button>
+                <a href="{% url 'admin_product' %}" class="m-3 btn btn-light">Cancel</a>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}
+
+{% block js_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  
+</script>    
+{% endblock js_scripts %}

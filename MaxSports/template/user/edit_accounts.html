@@ -1,0 +1,89 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'css/core-style.css' %}">
+{% endblock css_extra %}
+
+{% block top_banner_data %}
+{% endblock top_banner_data %}
+
+
+{% block section_data %}
+
+<section style="background-color: #eee;">
+    <div class="container py-5 ">
+      <div class="row d-flex justify-content-center">
+
+        <div class="col-lg-8 ">
+          <div class="card mb-4">
+            <div class="card-body">
+              <form action="{% url 'edit_profile' %}" method="post">
+                {% csrf_token %}
+                {% for detail in user_details %}
+                 
+                <div class="row">
+                  <div class="col-12 d-flex justify-content-between">
+                  <div class="col-6">
+                    <label for="exampleInputPassword4">Username </label>
+                    <input type="text" value="{{detail.username}}"  name="username" class="form-control" id="exampleInputPassword4">
+                  </div>
+                  <div class="col-6">
+                    <label for="exampleInputPassword4">Email </label>
+                    <input type="email" value="{{detail.email}}"  name="email" class="form-control" id="exampleInputPassword4">
+                  </div>
+                </div>
+                <div class="col-12 d-flex justify-content-between">
+                  <div class="col-6">
+                    <label for="exampleInputPassword4">First Name</label>
+                    <input type="text" value="{{detail.first_name}}"  name="first_name" class="form-control" id="exampleInputPassword4">
+                  </div>
+                  <div class="col-6">
+                    <label for="exampleInputPassword4">Last Name</label>
+                    <input type="text" value="{{detail.last_name}}"  name="last_name" class="form-control" id="exampleInputPassword4">
+                  </div>
+                </div>
+                </div>
+
+              <div class="m-3 d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="{% url 'my_account' %}" class="btn btn-warning">Cancel </a>
+              </div>
+              {% endfor %}
+            </form>
+
+            </div>
+            <div class="d-flex justify-content-center">
+            {% if messages  %}
+            {% for message in messages %}
+                <div class="text-center">
+                  {% if message.tags == 'error' %}
+                  <div class=" d-flex align-items-center" role="alert">
+                                            <h6 class="text-danger">{{message}} </h6>
+                  </div>
+                                        {% elif message.tags == 'success' %}
+                  <div class="d-flex align-items-center" role="alert">
+                                            <h6 class="text-success">{{message}}</h6>
+                  </div>
+                  {% else %}
+                  <div class="d-flex align-items-center" role="alert">
+                    <h6 class="text-info">{{message}}</h6>
+                  </div>
+                  {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+          </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock section_data %}
+
+{% block footer_area %}
+
+{% endblock footer_area %}

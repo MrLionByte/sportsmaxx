@@ -1,0 +1,92 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block search_option %}
+<div class="search-field d-none d-xl-block">
+  <form class="d-flex align-items-center h-100" action="{% url 'admin_user_management' %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+        <div class="input-group-prepend bg-transparent">
+          <i class="input-group-text border-0 mdi mdi-magnify"></i>
+          </div>
+        <input type="text" class="form-control bg-transparent border-0" name="search" aria-label="Search" aria-describedby="search-addon" 
+        placeholder="Search User" aria-label="Search" autocomplete="off">
+      </div>
+  </form>
+</div>
+{% endblock search_option %}
+
+{% block dashboard %}
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"> USERS</h4>
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <script>
+        swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+        </script>
+        {% elif message.tags == 'success' %}
+        <script>
+        swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+        </script>
+        {% else %}
+        <script>
+        swal("Message", "{{ message }}"); // Display general message
+        </script>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    
+        <table class="table table-striped">
+          <thead>
+            <tr>
+                <th> Sl.no </th>
+              <th> User </th>
+              <th> Email </th>
+              <th> Date-Joined </th>
+              <th> Action </th>
+            </tr>
+          </thead>
+          <tbody>
+         
+            {% for data in customer_data %}
+                {% if not data.is_superuser %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td> {{data.username}} </td>
+              <td>{{data.email}}</td>
+              <td> {{data.date_joined}} </td>
+              <td>
+                <a href="{% url 'user_account_details_admin' data.id %}"  class="btn btn-info" >Details</a>
+              {% if data.is_active %}
+               
+                <a href="{% url 'user_action_unblock' data.id %}"  class="btn btn-danger" >Block</a>
+              
+             {% else %}
+             
+              <a href="{% url 'user_action_block' data.id %}" class="btn btn-primary" >UnBlock</a>
+           
+           {% endif %}
+            </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+             
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

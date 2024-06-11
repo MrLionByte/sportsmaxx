@@ -1,0 +1,330 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block header_name %}
+					<h1>Cart</h1>
+{% endblock header_name %}
+{% block section_data %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+
+<section class="cart_area">
+    <div class="container">
+        <div class="cart_inner">
+            <div class="table-responsive">
+                {% if cart_all %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>                      
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Remove</th>
+                        </tr>
+                    </thead>
+                <form action="{% url 'update_total_price' %}" method="post">
+                    {% csrf_token %}
+                    <tbody>
+                        {% for obj in cart_all %}
+                        <tr >
+                            <input type="hidden"  name="product_ids[]" value="{{ obj.id }}">
+                            <td>
+                                 <div class="media">
+                                    <div class="d-flex">
+                                        <img style="width: 50px; height: 50px;" src="{{obj.product_color_variant.product_data_id.image_first.url}}" alt="">
+                                    </div>
+                             
+                                    <div class="media-body">
+                                        <p>{{obj.product_color_variant}}</p>
+                                    </div>
+                                    
+                                </div>
+                            </td>
+                            
+                            <td>
+                                
+                                <h5>₹ {{obj.product_color_variant.product_data_id.product_id.product_price_after}}</h5>
+                               
+                            </td>
+                            <td>
+                                <div class="product_count">
+                                    <input type="hidden" id="product_id_input" value="{{ obj.id }}">
+                                    <input type="text" name="quantities[]" id="qty-{{ obj.id }}" min="1" max="10" maxlength="12" 
+                                          value="{{obj.quantity}}" title="Quantity:" class="input-text qty" readonly>
+                                    <button onclick="updateQuantity('{{ obj.id }}', 'increase')" class="increase items-count" type="button">+</button>
+                                    <button onclick="updateQuantity('{{ obj.id }}', 'decrease')" class="reduced items-count" type="button">-</button>
+                                </div>
+                            </td>
+
+                            <td id="subtotal_display">
+
+                                <h5 id="total_price_{{ obj.id }}">₹ {{ obj.sub_total }}</h5>
+  
+                            </td>
+
+                            <td >
+                                <a href="#" class="delete-link" data-delete-url="{% url 'remove_from_cart' %}?delete_id={{obj.id}}">
+                                <img class="ml-3" width="20" height="20" src="https://img.icons8.com/ios-filled/50/000000/cancel.png" alt="cancel"/>
+                                </a>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                        <tr class="bottom_button">
+                            <td>
+                                <!-- <a href="#" class="gray_btn" type="submit">Continue Shopping</a> -->
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="cupon_text d-flex align-items-center">
+                                    <input type="text" placeholder="Coupon Code" name="coupon" id="coupon-input">
+                                    <a class="primary-btn" href="#" id="apply-coupon-btn">Apply</a>
+                                    <a class="gray_btn" style="width: 40%;" href="{% url 'delete_coupon' %}">Remove Coupon</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--  -->
+                        <!--  -->
+                </form>
+                <!--  -->
+                <!--  -->
+                        <tr>
+                            <td>
+                                <p style="color:black ;">Available Coupons :</p>
+                                {% if available_coupons %}
+                                {% for coupon in available_coupons %}
+                                    <p onclick="applyCoupon('{{coupon.code}}')">
+                                    <span >{{coupon.title}} :</span>
+                                    <span class="ml-2 text-info">{{coupon.code}}</span> 
+                                    <span class="ml-2">Discount : {% if coupon.discount_amount %}
+                                                                ₹ {{ coupon.discount_amount }}
+                                                                    {% elif coupon.discount_percentage %}
+                                                                {{ coupon.discount_percentage }}%
+                                                                    {% endif %}
+                                    </span>
+                                    <span onclick="copyToClipboard('{{coupon.code}}')" style="cursor: pointer; color: blue; margin-left: 10px;">
+                                        &#128203; <!-- This is the Unicode for the clipboard icon -->
+                                    </span>
+                                </p>
+                                {% endfor %}
+                                {% else %}
+                                <p class="text-danger">No Available Coupon</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                Shipping Fee : ₹ 150
+                            </td>
+                            <td>
+                                <p>Coupon discount : </p>
+                                <h5>Total Price</h5>
+                            </td>
+                            <td style="width: 10%;">
+                                {% if user_cart.coupon_active %}
+                                    {% if user_cart.coupon.discount_amount %}
+                                    <p>₹ {{user_cart.coupon.discount_amount}}</p>
+                                    {% elif user_cart.coupon.discount_amount %}
+                                    <p>{{user_cart.coupon.discount_percentage}} %</p>
+                                    {% endif %}
+                                {% else %}
+                                <p>0.00</p>
+                                {% endif %}
+                                <h5  id="subtotal_display_" value>₹ {{user_cart.total_amount}}</h5>
+                            </td>
+                        </tr>
+                        <tr class="shipping_area">
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="shipping_box">
+                                    <p>Shipping Free For More Than 5000 Rupees purchase</p>
+                                </div>
+                                    
+                            </td>
+                        </tr>
+                        <tr class="out_button_area">
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="checkout_btn_inner d-flex align-items-center">
+                                    <a class="gray_btn"  style="width: 60%;" href="{% url 'all_products_list' %} ">Continue Shopping</a>
+                                    {% if not cart_all.quantity %}
+                                    <a class="primary-btn" href="{% url 'checkout_product' %}">Proceed to checkout</a>
+                                    {% else %}
+                                    <a class="primary-btn" href="#">Proceed to checkout</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <h3 class="p-5"><b>CART IS EMPTY,   TRY TO ADD SOMETHING</b></h3>
+                <a class="btn btn-outline-primary m-5" href="{% url 'all_products_list' %}">LET'S SHOP NOW</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock section_data %}
+
+{% block extra_script %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        
+        function applyCoupon(couponCode) {
+            document.getElementById('coupon-input').value = couponCode;
+        }
+
+        function copyToClipboard(couponCode) {
+            const tempInput = document.createElement('input');
+            tempInput.style.position = 'absolute';
+            tempInput.style.left = '-9999px';
+            tempInput.value = couponCode;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+   
+        }
+
+        function showError(message) {
+            Swal.fire({
+                text: message,
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok !",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                }
+            });
+        }
+
+        function updateQuantity(productId, action) {
+            var quantityInput = document.getElementById("qty-" + productId);
+            var quantity = parseInt(quantityInput.value);
+        
+            if (action === 'increase' && quantity < 10) {
+                quantity++;
+            } else if (action === 'decrease' && quantity > 1) {
+                quantity--;
+            }
+        
+            quantityInput.value = quantity;
+        
+            fetch('/update_total_price/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    'quantity': quantity,
+                    'productId': productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                  
+                    showError(data.message);
+                 
+                    quantityInput.value = data.previousQuantity;
+                } else if (data.stockError) {
+                 
+                    showError(data.message);
+               
+                    quantityInput.value = data.availableQuantity;
+                } else {
+
+                    document.getElementById("total_price_" + productId).innerHTML = "₹ " + data.totalPrice;
+                    document.getElementById("subtotal_display_").innerHTML = "₹ " + data.subTotal;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+
+    document.querySelectorAll('.delete-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            
+            let deleteUrl = this.getAttribute('data-delete-url');
+            
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once removed, can't undo!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, remove it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    });
+
+document.getElementById('apply-coupon-btn').addEventListener('click', function(event) {
+    event.preventDefault(); 
+    var couponCode = document.getElementById('coupon-input').value;
+
+    if (couponCode) {
+        var applyCouponUrl = '{% url "apply_coupon" %}?coupon=' + encodeURIComponent(couponCode);
+        window.location.href = applyCouponUrl;
+    } else {
+        alert('Please enter a coupon code.');
+    }
+});
+</script>
+    
+
+{% endblock extra_script %}

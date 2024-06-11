@@ -1,0 +1,84 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between ">
+        <h4 class="card-title">Categories</h4>
+        <a href="{% url 'add_banner' %}"><button type="button" class="btn btn-outline-success">ADD</button></a>
+      </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th> Sl.No </th>
+              <th> Name </th>
+              <th> Product </th>
+              <th> From </th>
+              <th> Expiry </th>
+              <th class="text-center"> Action </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in main_banner %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td> {{data.name}} </td>
+              <td> {{data.product}} </td>
+              <td>  {{data.start}}  </td>
+              <td>  {{data.expiry}}  </td>
+              <td class="d-flex justify-content-between">
+                <a href="{% url 'admin_edit_category' data.pk %}">
+                <button type="button" class="btn  btn-outline-primary" data-bs-toggle="button" aria-pressed="true">Edit</button></a>  
+				
+				{% if not data.status %}
+				 <a class="ml-2" href="{% url 'list_banner' %}?banner_id={{data.id}} ">
+                <button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">List</button></a>
+				{% else %}
+				<a class="ml-2" href="{% url 'unlist_banner' %}?banner_id={{data.pk}} ">
+				<button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">UnList</button></a>	
+				{% endif %}
+
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+{% endblock dashboard %}
+

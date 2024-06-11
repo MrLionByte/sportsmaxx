@@ -1,0 +1,156 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <div class="card-body">
+        <h4 class="card-title text-center">ADD VARIANT</h4>
+        <p class="card-description text-center"> Add variants like color </p>
+        <form class="forms-sample" method="post" action="{% url 'admin_edit_variant' %}" enctype="multipart/form-data">
+
+                {% csrf_token %}
+                <div class="form-group ">
+                      <div class="col-12">
+                        <label for="exampleInputEmail3">Product</label>
+                        <select name="selected_product" required class="m-1">
+                          {% for pdata in products_data %}
+             
+                              <option value="{{ pdata.id }}">{{ pdata.product_name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+                     <div class="form-group col-12 d-flex justify-content-center">
+                      <div class="col-6 w-50">
+                  <label for="exampleInputPassword4">Color</label>
+                  <input type="text" name="color" class="form-control"  id="exampleInputPassword4" placeholder="color" required>
+                      </div>
+                      <div class="col-6 w-50">
+                        <label for="exampleInputPassword4">Variant</label>
+                        <input type="text" name="product_variant_name" required class="form-control" id="exampleInputPassword4" placeholder="Variant">
+                      </div>
+                      </div>
+                
+                <div>
+                  <div class="m-3 d-flex justify-content-between col-12">
+                      <div class="col-6 ">
+                        <label for="avatar1">Image 1</label>
+                        <input type="file"  id="avatar1" class="form-control" name="img" id="exampleInputImage1" onchange="previewImage(this, 'imagePreview1')"
+                        accept="image/png, image/jpeg ,image/jpg" required>
+                      </div>
+                      <div class="col-6 ">
+                        <img class="p-3"  id="imagePreview1" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px;">
+                      </div>
+                  </div>
+                  <div class="m-3 d-flex justify-content-between col-12">
+                      <div class="col-6 ">
+                        <label for="avatar2">Image 2</label>
+                        <input type="file"  id="avatar2" class="form-control" name="img2" id="exampleInputImage2" onchange="previewImage(this, 'imagePreview2')"
+                        accept="image/png, image/jpeg ,image/jpg" required>
+                      </div>
+                      <div class="col-6 ">
+                        <img class="p-3"  id="imagePreview2" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+                      </div>
+                  </div>
+                  <div class="m-3 d-flex justify-content-between col-12">
+                      <div class="col-6 ">
+                        <label for="avatar3">Image 3</label>
+                        <input type="file"  id="avatar3" class="form-control" name="img3" id="exampleInputImage3" onchange="previewImage(this, 'imagePreview3')"
+                        accept="image/png, image/jpeg ,image/jpg" required>
+                      </div>
+                      <div class="col-6 ">
+                        <img class="p-3"  id="imagePreview3" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+                      </div>
+                  </div>
+                  <div class="m-3 d-flex justify-content-between col-12">
+                      <div class="col-6 ">
+                        <label for="avatar4">Image 4</label>
+                        <input type="file" id="avatar4" class="form-control" name="img4" id="exampleInputImage4" onchange="previewImage(this, 'imagePreview4')"
+                        accept="image/png, image/jpeg ,image/jpg" required>
+                      </div>
+                      <div class="col-6 ">
+                        <img class="p-3"  id="imagePreview4" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+                      </div>
+                    </div>
+                </div>   
+              
+                <button type="submit" class="btn btn-primary m-3">Submit</button>
+                <a href="{% url 'admin_product' %}" class="m-3 btn btn-light">Cancel</a>
+
+        </form>
+        {% if messages %}
+        <div class="d-flex justify-content-center">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <h5 class="text-danger">{{message}}</h5>
+                {% elif message.tags == 'success' %}
+                    <h5 class="text-success">{{message}}</h5>
+                {% else %}
+                    <h5 class="text-warning">{{message}}</h5>
+                
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}
+{% block js_scripts %}
+   
+<script>
+  function moveToNext(event, nextInputId) {
+      if (event.keyCode === 13) { 
+          event.preventDefault(); 
+          var nextInput = document.getElementById(nextInputId);
+          if (nextInput) {
+              nextInput.focus(); 
+          }
+      }
+  }
+
+  function previewImage(input, previewId) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+          var imgElement = document.getElementById(previewId);
+          imgElement.src = e.target.result;
+          imgElement.style.display = 'block';
+      };
+
+      reader.readAsDataURL(input.files[0]);
+  }
+</script>
+
+{% endblock js_scripts %}

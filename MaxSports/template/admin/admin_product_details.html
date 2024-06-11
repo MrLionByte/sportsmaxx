@@ -1,0 +1,181 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock js_link_head %}
+
+
+{% block navbar_menu_wrapped %}
+<p>NB: If product need to feature ,just press star button(Red if activated)</p>
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+    <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between ">
+            <h4 class="card-title">{{product_name}}</h4>
+            <a href="{% url 'admin_product' %}" class="btn btn-outline-info">GO BACK</a>
+          </div>
+          <div>
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <h5 class="text-danger">{{message}}</h5>
+            {% elif message.tags == 'success' %}
+                <h5 class="text-success">{{message}}</h5>
+            {% else %}
+                <h5 class="text-warning">{{message}}</h5>
+            
+            {% endif %}
+        {% endfor %}
+      </div>
+          {% for data in product_data %}
+          <h3> Variant No :{{forloop.counter}} 
+            {% if data.featured %}
+            <a href="{% url 'unfeature' product_id=data.id %}?next={{ request.path }}">
+            <span class="icon-bg">
+            <i class="mdi mdi-star menu-icon" style="color: red;"></i></span></a>
+        
+        {% else %}
+        <a href="{% url 'feature' product_id=data.id %}?next={{ request.path }}">
+          <span class="icon-bg">
+          <i class="mdi mdi-star menu-icon" ></i></span></a>
+      
+        {% endif %}
+      </h3>
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th class="text-danger"> Name (Color) </th>
+                  <th class="text-danger"> Category </th>
+                  
+                  <th class="text-danger"> MRP Price </th>
+                  <th class="text-danger"> offer %</th>
+                  <th class="text-danger"> Price</th>
+
+                </tr>
+              </thead> 
+              <tbody>
+                <tr >
+                  <td >{{data}}</td>
+                  <td >{{data.product_id.category_id}}</td>
+                  
+                  <td >{{data.product_id.product_price}}</td>
+                  <td >{{data.product_id.offer_percentage}}</td>
+                  <td >{{data.product_id.product_price_after}}</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr>
+                  <th class="text-danger"> Img 1 </th>
+                  <th class="text-danger">Img 2</th>
+                  <th class="text-danger">Img 3</th>
+                  <th class="text-danger">Img 4</th>
+                  <th class="text-danger">Action on variant</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr >
+                  <td><img style="width: 150px; height: 150px;" src="{{data.image_first.url}}" alt=""></td>
+                  <td><img style="width: 150px; height: 150px;" src="{{data.image_second.url}}" alt=""></td>
+                  <td><img style="width: 150px; height: 150px;" src="{{data.image_third.url}}" alt=""></td>
+                  <td><img style="width: 150px; height: 150px;" src="{{data.image_fourth.url}}" alt=""></td>
+                  <td> <a href="{% url 'edit_product_image' data.pk %}">
+                    <button type="button" class="btn  btn-outline-primary" data-bs-toggle="button" aria-pressed="true">Edit Color <br>& images</button></a> </td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr>
+                  <th class="text-danger"> List  <span class="pr-5"> </span>   Delete </th>
+                  <th class="text-danger"> variant_name </th>
+                  <th class="text-danger">Updated_at</th>
+                  <th class="text-danger">Added_at</th>
+                  <th class="text-danger">Status</th>
+                </tr>
+              </thead> 
+              <tbody>
+                <tr >
+                  <td>
+                    {% if data.status %}
+                    <a href="{% url 'unlist_product_type' data.id %}?next={{ request.path }}" class="btn btn-danger">Unlist</a>
+                    {% else %}
+                    <a href="{% url 'list_product_type' data.id %}?next={{ request.path }}" class="btn btn-success">List</a>
+                    {% endif %} <span class="pr-4"></span>
+                    {% if data.delete_opt %}
+                    <a href="{% url 'product_color_delete' data.id %}?next={{ request.path }}" class="btn btn-success">Undo</a>
+                    {% else %}
+                    <a href="{% url 'product_color_undo' data.id %}?next={{ request.path }}" class="btn btn-danger">Delete</a>
+                    {% endif %}
+                  </td>
+                  <td>{{data.product_variant_name}} </td>
+                  <td>{{data.product_id.product_added_at}} </td>
+                  <td>{{data.product_id.product_updated_at}} </td>
+                  {% if data.product_variant_name.product_list %}
+                  <td>Unlisted </td>
+                  {% else %}
+                  <td>Listed </td>
+                  {% endif %}
+                </tr>
+              </tbody>
+
+              <thead>
+                <tr>
+                  <th class="text-danger">ALL :</th>
+                  {% for size in data.product_size_qty.all %}
+                  <th class="text-danger">Size : {{size.product_size}} </th>
+                  
+                  {% endfor %}
+                  
+                </tr>
+              </thead> 
+              <tbody>
+                <tr >
+                  <td><a href="{% url 'admin_edit_size_qty' data.id %}?next={{ request.path }}">Edit Size & Qty</a></td>
+                  {% for size in data.product_size_qty.all %}
+                  <td>{{size.product_quantity}}</td>
+                  {% endfor %}
+                </tr>
+              </tbody>
+
+            </table>
+            <br><br><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+    
+
+{% endblock dashboard %}
+

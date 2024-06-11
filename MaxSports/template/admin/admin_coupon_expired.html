@@ -1,0 +1,128 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<style>
+
+.dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+  {% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+<div class="main-panel">
+<div class="content-wrapper">
+<div class="row">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between ">
+        <h4 class="card-title">All Orders</h4>
+       
+      </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th><span>Coupon Name </span></th>
+              <th> Coupon code </th>
+              <th class="text-center"> Discount <br> (Amount/Percentage) </th>
+              <th> Min & Max limit </th>
+              <th  class="text-center"> Valid <br> From - To </th>
+              <th class="text-center"> Status </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for coupon in all_coupons %}
+              <td><span>{{coupon.title}}</span></td>
+              <td> {{coupon.code}} </td>
+              {% if coupon.discount_percentage %}
+              <td class="text-center"> {{coupon.discount_percentage}} %</td>
+              {% else %}
+              <td class="text-center">₹ {{coupon.discount_amount}} </td>
+              {% endif %}
+              <td>₹ {{coupon.min_limit}} - ₹ {{coupon.max_limit}} </td>
+              <td>{{coupon.valid_from|date:'d/m/y'}} - {{coupon.expiry|date:'d/m/y'}}</td>
+              <td class="d-flex justify-content-between"> 
+                <a href="{% url 'edit_coupon' coupon.id %}?next={{request.path}}" >
+                <button type="button" class="btn  btn-outline-info" data-bs-toggle="button" aria-pressed="true">EDIT</button></a>
+             </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

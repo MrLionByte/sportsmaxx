@@ -1,0 +1,115 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <div class="card-body">
+        <h4 class="card-title text-center">EDIT COUPON</h4>
+        <p class="card-description text-center">  </p>
+        <form class="forms-sample" method="post" action="{% url 'edit_coupon' coupon_id %}?next={{request.path}}">
+
+                {% csrf_token %}
+                <div class="form-group d-flex justify-content-center">
+                      <div class="col-12 ">
+                        <label for="exampleInputEmail3">Title</label>
+                        <input type="text" name="title" class="form-control"  id="exampleInputPassword4" value="{{coupon.title}}" >
+                    </div>
+                  </div>
+                  <div class="form-group col-12 d-flex justify-content-between">
+                      <div class="col-6">
+                        <label for="exampleInputPassword4">Valid from : {{coupon.valid_from}}</label>
+                        <input type="date" name="valid" class="form-control"  id="exampleInputPassword4" placeholder="{{coupon.valid_from}}" >
+                      </div>
+                      <div class="col-6">
+                        <label for="exampleInputPassword4">Expiry till : {{coupon.expiry}}</label>
+                        <input type="date" name="expiry"  class="form-control" id="exampleInputPassword4" placeholder="{{coupon.expiry}}">
+                      </div>
+                  </div>
+                  <div class="form-group col-12 d-flex justify-content-between">
+                    <div class="col-6">
+                      <label for="exampleInputPassword4">Min Price</label>
+                      <input type="number" name="min" class="form-control"  id="exampleInputPassword4" value="{{coupon.min_limit}}" >
+                    </div>
+                    <div class="col-6">
+                      <label for="exampleInputPassword4">Max Price </label>
+                      <input type="number" name="max"  class="form-control" id="exampleInputPassword4" value="{{coupon.max_limit}}">
+                    </div>
+                </div>
+                <div class="form-group d-flex justify-content-center">
+                  <!-- <div class="col-12 ">
+                    <label for="exampleInputEmail3">Coupon Code</label>
+                    <input type="text" name="code" class="form-control"  id="exampleInputPassword4" value="{{coupon.code}}" >
+                </div> -->
+              </div>
+              <div class="form-group d-flex justify-content-between">
+                <div class="col-6">
+                <label for="discountPercentage">Discount Percentage/Amount</label>
+                {% if coupon.discount_percentage %}
+                <input type="number" min="0" name="discountPercentage" class="form-control" id="discountPercentage" value="{{coupon.discount_percentage}}" autocomplete="off">
+                {% else %}
+                <input type="number" min="0" name="discountPercentage" class="form-control" id="discountPercentage" value="{{coupon.discount_amount}}" autocomplete="off">
+                {% endif %}
+                      </div>
+                  <div class="col-6">
+                    <br>
+                      <label for="percentage" style="margin-left: 15px;">Percentage</label>
+                      <input  type="radio" id="percentage" required name="choice" value="per"/><br>
+                      <label for="amount" style="margin-left: 15px;">Amount</label>
+                      <input  type="radio" id="amount" required name="choice" value="amt"/>
+                   </div>
+                  </div>
+                <button type="submit" class="btn btn-primary m-3">Submit</button>
+                <a href="{% url 'admin_coupons' %}" class="m-3 btn btn-light">Cancel</a>
+
+        </form>
+        {% if messages %}
+        <div class="d-flex justify-content-center">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <h5 class="text-danger">{{message}}</h5>
+                {% elif message.tags == 'success' %}
+                    <h5 class="text-success">{{message}}</h5>
+                {% else %}
+                    <h5 class="text-warning">{{message}}</h5>
+                
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

@@ -1,0 +1,87 @@
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <script>
+        swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+        </script>
+        {% elif message.tags == 'success' %}
+        <script>
+        swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+        </script>
+        {% else %}
+        <script>
+        swal("Message", "{{ message }}"); // Display general message
+        </script>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+
+    storage = messages.get_messages(request)
+    storage.used = True
+
+from django.contrib.auth.decorators import login_required 
+@login_required
+from django.contrib.auth.decorators import user_passes_test
+@user_passes_test(lambda u: u.is_superuser, login_url='/admin_login/')
+
+from django.db import models
+from django.db import transaction
+
+class Wallet_User(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    date = models.DateField(auto_now_add=True)
+    transaction_type = models.CharField(max_length=50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+class Wallet_transactions(models.Model):
+    wallet_id = models.ForeignKey(Wallet_User, on_delete=models.SET_NULL, null=True)
+    transaction_for = models.CharField(max_length=50, default=None)
+    date_of_transaction = models.DateField(auto_now_add=True)
+    amount_sent = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True)
+    amount_received = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True)
+    delete = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        # Check if this is an update to an existing instance
+        if self.pk:
+            # Fetch the old values from the database
+            old_instance = Wallet_transactions.objects.get(pk=self.pk)
+            old_amount_sent = old_instance.amount_sent or 0
+            old_amount_received = old_instance.amount_received or 0
+
+            # Update the balance based on the old values
+            if self.wallet_id:
+                with transaction.atomic():
+                    self.wallet_id.balance += old_amount_sent
+                    self.wallet_id.balance -= old_amount_received
+                    self.wallet_id.amount -= (old_amount_sent + old_amount_received)
+                    self.wallet_id.save()
+
+        super().save(*args, **kwargs)
+
+        # Update the balance with the new values
+        if self.wallet_id:
+            with transaction.atomic():
+                if self.amount_sent:
+                    self.wallet_id.balance -= self.amount_sent
+                    self.wallet_id.amount += self.amount_sent
+                if self.amount_received:
+                    self.wallet_id.balance += self.amount_received
+                    self.wallet_id.amount += self.amount_received
+                self.wallet_id.save()
+
+    def delete(self, *args, **kwargs):
+        if self.wallet_id:
+            with transaction.atomic():
+                if self.amount_sent:
+                    self.wallet_id.balance += self.amount_sent
+                    self.wallet_id.amount -= self.amount_sent
+                if self.amount_received:
+                    self.wallet_id.balance -= self.amount_received
+                    self.wallet_id.amount -= self.amount_received
+                self.wallet_id.save()
+        super().delete(*args, **kwargs)

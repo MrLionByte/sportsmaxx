@@ -1,0 +1,167 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+{% endblock css_extra %}
+
+
+{% block header_name %}
+					<h1>My Wishlist</h1>
+{% endblock header_name %}
+{% block section_data %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<section class="cart_area">
+                <div class="cart-wrap">
+                    <div class="container">
+                        <div class="row">
+                            {% for message in messages %}
+                            <h6 class="text-info">{{message}}</h6>
+                            {% endfor %}
+                            <div class="col-md-12">
+                                <!-- <div class="main-heading mb-10">My wishlist</div> -->
+                                {% if all_wishlist %}
+                                <div class="table-wishlist">
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th width="45%">Product Name</th>
+                                                <th width="15%">Unit Price</th>
+                                                <th width="15%">Available Sizes</th>
+                                                <th width="15%"class="text-center"> Action</th>
+                                                <th width="10%"></th>
+                                            </tr>
+                                        </thead>
+                                        {% for product in all_wishlist %}
+                                        <form action="{% url 'add_product_to_cart' %}" method="post">
+                                            {% csrf_token %}
+                                        <tbody>
+                                            <tr>
+                                                <input type="text" hidden name="redirect_wishlist" value="{{product.pk}}">
+                                                <td width="45%">
+                                                    <div class="display-flex align-center">
+                                                        <div class="img-product">
+                                                            <a href="{% url 'product_details' product.product_color_variant.pk %}">
+                                                            <img src="{{product.product_color_variant.image_first.url}}" alt="" class="mCS_img_loaded"></a>
+                                                        </div>
+                                                        <div class="name-product">
+                                                            {{product.product_color_variant}}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td width="15%" class="price"> ₹ {{product.product_color_variant.product_id.product_price_after}}</td>
+
+                                                <td width="20%"><div class="d-fex justify-content-between">
+
+                                                {% if product.product_color_variant.product_size_qty.all %}
+
+                                                <select name="product_size" required>
+                                                    <option value="" selected disabled>Select Size</option>
+                                                    {% for size in product.product_color_variant.product_size_qty.all %}
+                                                        {% if size.product_quantity != 0 %}
+                                                            <option value="{{ size.product_size }}">{{ size.product_size }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                                <input type="hidden" name="product_id" value="{{ product.pk }}">
+
+                                                {% else %}
+                                                <span class="in-stock-box">Out Stock</span>
+                                                {% endif %}
+                                             
+                                            </div></td>
+                                        
+                                                
+                                                <td width="15%"><button class="round-black-btn small-btn" type="submit">Add to Cart</button></td>
+                                                <td width="5%" class="text-center"><a href="#" data-delete-url="{% url 'delete_from_wishlist' %}?delete_id={{product.id}}" class="trash-icon delete-link">
+                                                    <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/delete-forever.png" alt="delete-forever"/>
+                                                </a></td>
+                                            </tr>
+                                           
+                                        </tbody>
+                                        </form>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                                {% else %}
+                                <h3 class="p-5">Empty Wishlist, Add some products</h3>
+                                <a class="btn btn-outline-primary m-5" href="{% url 'all_products_list' %}">LET'S SHOP NOW</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+                <div class="d-fex justify-content-center">
+                    {% if messages  %}
+                    {% for message in messages %}
+                            {% if message.tags == 'error' %}
+                            <h4 style="color: darkred;">{{message}}</h4>
+                            {% elif message.tags == 'success' %}
+                              <h4 style="color: green;">{{message}}</h4>
+                            {% else %}
+                                <h4 style="color: orange;">{{message}}</h4>
+                            {% endif %}
+                        
+                    {% endfor %}
+                    {% endif %} 
+                </div>
+                
+</section>
+
+{% endblock section_data %}
+
+{% block extra_script %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    
+    document.querySelectorAll('.delete-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default behavior of the link
+            
+            let deleteUrl = this.getAttribute('data-delete-url'); // Get the delete URL from data attribute
+            
+            // Show SweetAlert2 dialog
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once removed, will be removed from Wishlist!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, remove it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms deletion, navigate to the delete URL
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    });
+
+
+
+</script>
+    
+
+{% endblock extra_script %}

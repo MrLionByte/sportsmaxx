@@ -1,0 +1,79 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+     
+      <div class="card-body">
+        <h4 class="card-title text-center">EDIT PRODUCT</h4>
+        <p class="card-description text-center"> </p>
+        <form class="forms-sample" method="post" action="{% url 'admin_edit_product' data.pk %}?next={{request.path}}">
+
+          {% csrf_token %}
+          <div class="form-group ml-3 mr-3">
+            <label for="exampleInputName1">Product Name</label>
+            <input type="text" value="{{data.product_name}}" name="product_name" class="form-control" id="exampleInputName1" placeholder="Product Name">
+          </div>
+          <div class="form-group col-12 d-flex justify-content-between">
+                <div class="col-4">
+            <label for="exampleInputEmail3">Category : {{data.category_id.category_name}}</label>
+            <select name="selected_category">
+              {% for category in categories %}
+                  <option value="{{ category.id }}">{{ category.category_name }}</option>
+              {% endfor %}
+          </select>
+                </div>
+                <div class="col-4">
+            <label for="exampleInputPassword4">Price</label>
+            <input type="number" value="{{data.product_price}}"  name="product_price" class="form-control" id="exampleInputPassword4">
+                </div>
+                <div class="col-4">
+            <label for="exampleInputPassword4">offer %</label>
+            <input type="number" value="{{data.offer_percentage}}" name="offer_percentage" class="form-control" id="exampleInputPassword4">
+                </div>
+          </div>
+          <div class="form-group ml-3 mr-3">
+            <label for="exampleTextarea1">Description</label>
+            <textarea class="form-control"  name="product_description" id="exampleTextarea1" rows="4" cols="50">{{data.product_description}}</textarea>
+          </div>
+
+            <button type="submit" class="btn btn-primary m-4">Submit</button>
+        </form>
+        <a href="{% url 'admin_product' %}"><button class="m-4 btn btn-light">Cancel</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

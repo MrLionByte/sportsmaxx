@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports_maxx Invoice</title>
+    <link rel="stylesheet" media="print" href="{% static 'css/invoice.css' %}">
+</head>
+<body>
+  <!-- Content for Static Frame 'header_frame' -->
+  <div id="header_content">
+    <h3>SportsMaxx</h3>
+</div>
+
+<!-- Content for Static Frame 'footer_frame'
+<div id="footer_content">(c) - page <pdf:pagenumber>
+    of <pdf:pagecount>
+</div> -->
+
+<!-- HTML Content -->
+<table>
+        <tr>
+            <td>{{order_details.order.address.full_name}}</td>
+            <td>{{order_details.order.address.phone_no}}</td>
+        </tr>
+        <tr>
+            <td>{{order_details.order.address.city}} {{order_details.order.address.state}},</td>
+            <td>{{order_details.order.user_id.email}}</td>
+        </tr>
+        <tr>
+            <td>{{order_details.order.address.pincode}}</td>
+            <td>{{order_details.order.address.post_office}}</td>
+        </tr>
+</table>
+
+<hr>
+
+<table>
+    <tr>
+
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+    </tr>
+    <tr>
+        {% for order in order_details_all %}
+        <td>{{order.product_added}}</td>
+        <td>{{order.product_added.product_id.product_price_after}}</td>
+        <td>{{ order.quantity }}</td>
+        <td>{{order.final_product_price}}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+
+        <td>consultation </td>
+        <td>$225</td>
+        <td>1</td>
+        <td>$225</td>
+    </tr>
+    <tr>
+
+        <td>Service Hours</td>
+        <td>$189</td>
+        <td>45.7</td>
+        <td>$8637.30</td>
+    </tr>
+</table>
+
+<hr>
+
+<p><strong>Total: $8878.28</strong></p>
+
+        
+
+  </body>
+</html>

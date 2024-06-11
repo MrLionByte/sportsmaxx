@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+	{% load static %}
+
+{% block head %}
+<head>
+
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<link rel="shortcut icon" href="{% static 'img/sport_max_fav.png' %}">
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>SPORTS-MAXX</title>
+
+	<!-- Link Fonts -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<link type="text/css" href="@@path/vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+	<!--
+		CSS
+		============================================= -->
+	<link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/themify-icons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+	<link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+	<link rel="stylesheet" href="{% static 'css/nouislider.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/ion.rangeSlider.css' %}" />
+	<link rel="stylesheet" href="{% static 'css/ion.rangeSlider.skinFlat.css' %}" />
+	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	<link rel="stylesheet" href="{% static 'fonts/Linearicons-Free.woff2' %}">
+	
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style>
+	body {font-family: "Lato", sans-serif}
+	.mySlides {display: none}
+	</style>
+{% block extra_head %}
+{% endblock extra_head %}
+</head>
+{% endblock head %}
+
+{% block body %}
+<body style="background-color:#f0efec ;">
+
+    <!-- Start Header Area -->
+	<header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+						<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="{% url 'home' %}"><img src="{% static 'img/sortsMax_logo.png' %}" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					{% block top_banner_data %}
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto">
+							<li class="nav-item "><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false"><a class="nav-link" href="{% url 'all_products_list' %}">Shop</a></a>
+								<ul class="dropdown-menu">
+									{% for data in category_data %}
+								
+									<li class="nav-item"><a  class="nav-link" name="products_id" href="{% url 'user_products' data.pk %}">{{data.category_name}}</a></li>
+									
+									{% endfor %}
+								</ul>
+							</li>
+
+							{% if user.is_authenticated %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">{{ user.username }}</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'my_account' %}">Profile</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_orders' %}">My_order</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_logout' %}">Logout</a></li>
+									<!-- <li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li>
+									<li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li>
+									<li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li> -->
+								</ul>
+							</li>
+
+							{% else %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">Login</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_sign_in' %}">Login</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_sign_up' %}">Sign-up</a></li>
+									
+								</ul>
+							</li>
+
+							{% endif %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">About</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'terms' %}">Terms</a></li>
+									<!-- <li class="nav-item"><a class="nav-link" href="elements.html">Elements</a></li> -->
+								</ul>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li class="nav-item"><a href="{% url 'show_wishlist' %}" class="cart"><span>
+								<img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/like--v1.png" alt="like--v1"/></span></a></li>
+								
+								{% if user.is_authenticated %}
+								<li class="nav-item"><a href="{% url 'cart_show' %}" class="cart"><span>
+									<img width="24" height="24" src="https://img.icons8.com/windows/32/shopping-bag.png" alt="shopping-bag"/></span></a></li>
+								{% else %}
+								<li class="nav-item"><a href="{% url 'show_wishlist' %}" class="cart"><span>
+									<img width="24" height="24" src="https://img.icons8.com/windows/32/shopping-bag.png" alt="shopping-bag"/></span></a></li>
+								{% endif %}
+
+								{% block search_option_select %}
+								<li class="nav-item">
+								<button class="search"><span id="search">
+									<img width="24" height="24" src="https://img.icons8.com/ios-filled/50/search--v1.png" alt="search--v1"/>
+								</span></button>
+							</li>
+							{% endblock search_option_select %}
+						</ul>
+					</div>
+						<!-- End top bar -->
+						{% endblock top_banner_data %}
+				</div>
+			</nav>
+		</div>
+		{% block search_option %}
+		<div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between" action="{% url 'all_products_list' %}" method="post">
+					{% csrf_token %}
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here" name="search" autocomplete="off">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div>
+		{% endblock search_option %}
+	</header>
+	<!-- End Header Area -->
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                {% block header_name %}
+                <h1>About</h1>
+                {% endblock header_name %}
+                <nav class="d-flex align-items-center">
+                            {% if breadcrumbs %}
+                                    <p style="background-color: transparent;">
+                                        {% include "dynamic_breadcrumbs/breadcrumbs.html" with breadcrumbs=breadcrumbs%}
+                                    </p>
+                            {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+{% block section_data %}
+<section>
+	<div class="mySlides w3-display-container w3-center">
+	  <img src="{% static 'img/sport_max_fav.png' %}" style="width:20%">
+	  <div class="w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small">
+		<h3></h3>
+		<p><b>Easy  to access and easy to buy products!</b></p>   
+	  </div>
+	</div>
+
+	<div class="mySlides w3-display-container w3-center">
+	  <img src="{% static 'img/sport_max_fav.png' %}" style="width:20%">
+	  <div class="w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small">
+		<h3></h3>
+		<p><b>With the best affordable and most reliable products.</b></p>    
+	  </div>
+	</div>
+
+	<div class="mySlides w3-display-container w3-center">
+	  <img src="{% static 'img/sport_max_fav.png' %}" style="width:20%">
+	  <div class="w3-display-bottommiddle w3-container w3-text-white w3-padding-32 w3-hide-small">
+		<h3></h3>
+		<p><b>Best price and best quality without compromising on quality.</b></p>    
+	  </div>
+	</div>
+  
+	<!-- The Band Section -->
+	<div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
+	  <h2 class="w3-wide"><b>SPORTS-MAXX</b></h2>
+	  <p class="w3-opacity"><i>"Fuel Your Passion, Elevate Your Game. Discover the Gear That Champions Trust."</i></p>
+	  <p class="w3-justify">Welcome to Sports Maxx, your ultimate destination for premium sports equipment and 
+		apparel. Our mission is to fuel your passion and elevate your game with the gear that champions trust.
+		 Whether you're a professional athlete, a weekend warrior, or a fitness enthusiast, we have everything you 
+		 need to reach your peak performance.</p>
+	  <h2 class="w3-wide">Our Story</h2>
+	   <p class="w3-justify mb-5">Founded in 2024 by a techy and sports enthusiast Farhan, Sports Maxx began with a simple 
+		idea: to provide top-quality sports gear to athletes of all levels, and slo fans able to purchase jerseys and other products of 
+		their favorite player or team. This is our humble beginnings in a small scale, with bigger dreams to grow to a leading 
+		e-commerce platform trusted by thousands of sports enthusiasts worldwide. Our passion for sports and 
+		commitment to excellence drives us to continually innovate, evolve and offer the best products in the market.</p>
+		<div class="w3-third">
+		  <img width="251px" height="201px" src="{% static 'img/about/320px-Kaká_visited_Stadium_St._Petersburg.jpg' %}" class="w3-round w3-margin-bottom" alt="Random Name" style="width:60%">
+		  <p><i>Playing motivates players. - </i>Kaka</p>
+		</div>
+		<div class="w3-third">
+			<img width="251px" height="201px" src="{% static 'img/about/images.jpeg' %}" class="w3-round w3-margin-bottom" alt="Random Name" style="width:60%">
+			<p><i>If you wake up without goals, then go back to sleep - </i>Sanju Samson</p>
+		</div>
+		<div class="w3-third">
+			<img width="251px" height="201px" src="{% static 'img/about/Sunil_Chhetri_Indian_Football_Player.jpg' %}" class="w3-round w3-margin-bottom" alt="Random Name" style="width:60%">
+			<p><i>“Football is all about fans.” - </i>Sunil Chhetri</p>
+		</div>
+	  </div>
+	</div>
+  
+	<!-- The Contact Section -->
+	<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+	  <h2 class="w3-wide w3-center">CONTACT</h2>
+	  <p class="w3-opacity w3-center"><i>For queries feel free to contact us!</i></p>
+	  <div class="w3-row w3-padding-32">
+		<div class="w3-col m6 w3-large w3-margin-bottom">
+		  <i class="fa fa-map-marker" style="width:30px"></i> Kerala, India<br>
+		  <i class="fa fa-phone" style="width:30px"></i> Phone: Unavailable now<br>
+		  <i class="fa fa-envelope" style="width:30px"> </i> Email: sportsmaxx@mail.com<br>
+		</div>
+		<div class="w3-col m6">
+		  <form action="/action_page.php" target="_blank">
+			<div class="w3-row-padding" style="margin:0 -16px 8px -16px">
+			  <div class="w3-half">
+				<input class="w3-input w3-border" type="text" placeholder="Name" required name="Name">
+			  </div>
+			  <div class="w3-half">
+				<input class="w3-input w3-border" type="text" placeholder="Email" required name="Email">
+			  </div>
+			</div>
+			<input class="w3-input w3-border" type="text" placeholder="Message" required name="Message">
+			<button class="w3-button w3-black w3-section w3-right" type="submit">SEND</button>
+		  </form>
+		</div>
+	  </div>
+	</div>
+	
+  <!-- End Page Content -->
+  </div>
+
+  <script>
+  // Automatic Slideshow - change image every 4 seconds
+  var myIndex = 0;
+  carousel();
+  
+  function carousel() {
+	var i;
+	var x = document.getElementsByClassName("mySlides");
+	for (i = 0; i < x.length; i++) {
+	  x[i].style.display = "none";  
+	}
+	myIndex++;
+	if (myIndex > x.length) {myIndex = 1}    
+	x[myIndex-1].style.display = "block";  
+	setTimeout(carousel, 4000);    
+  }
+  
+  // Used to toggle the menu on small screens when clicking on the menu button
+  function myFunction() {
+	var x = document.getElementById("navDemo");
+	if (x.className.indexOf("w3-show") == -1) {
+	  x.className += " w3-show";
+	} else { 
+	  x.className = x.className.replace(" w3-show", "");
+	}
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  var modal = document.getElementById('ticketModal');
+  window.onclick = function(event) {
+	if (event.target == modal) {
+	  modal.style.display = "none";
+	}
+  }
+  </script>
+  
+</section>
+{%endblock section_data %}
+	<!-- start footer Area -->
+	<footer class="footer-area section_gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3  col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>About Us</h6>
+						<p>
+						Welcome to Sports Maxx, your ultimate destination for premium sports equipment and apparel.
+						 Our mission is to fuel your passion and elevate your game with the gear that champions trust.
+						</p>
+					</div>
+				</div>
+				<div class="col-lg-4  col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>Newsletter</h6>
+						<p>Stay update with our latest</p>
+						<div class="" id="mc_embed_signup">
+
+							<form target="_blank" novalidate="true" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
+							 method="get" class="form-inline">
+
+								<div class="d-flex flex-row">
+
+									<input class="form-control" name="EMAIL" placeholder="Enter Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Email '"
+									 required="" type="email">
+
+
+									<button class="click-btn btn btn-default"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></button>
+									<div style="position: absolute; left: -5000px;">
+										<input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value="" type="text">
+									</div>
+
+									<!-- <div class="col-lg-4 col-md-4">
+												<button class="bb-btn btn"><span class="lnr lnr-arrow-right"></span></button>
+											</div>  -->
+								</div>
+								<div class="info"></div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3  col-md-6 col-sm-6">
+					<div class="single-footer-widget mail-chimp">
+						<h6 class="mb-20">Instragram Feed</h6>
+						<ul class="instafeed d-flex flex-wrap">
+							<li><img src="{% static 'img/i1.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i2.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i3.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i4.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i5.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i6.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i7.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i8.jpg' %}" alt=""></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>Follow Us</h6>
+						<p>Let us be social</p>
+						<div class="footer-social d-flex align-items-center">
+							<a href="#"><i class="fa fa-facebook"></i></a>
+							<a href="#"><i class="fa fa-twitter"></i></a>
+							<a href="#"><i class="fa fa-dribbble"></i></a>
+							<a href="#"><i class="fa fa-behance"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!-- End footer Area -->
+
+	<script>
+		document.getElementById('basicAlert').addEventListener('click', function () {
+			Swal.fire({
+				icon: "error",
+				title: "Not Allowed...",
+				text: "You need to sign in!",
+				footer: '<a href="{% url "user_sign_up" %}">Sign in?</a>'
+			  });
+		});
+	</script>
+
+	<script src="{% static 'js/vendor/jquery-2.2.4.min.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+	 crossorigin="anonymous"></script>
+	<script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+	<script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+	<script src="{% static 'js/jquery.sticky.js' %}"></script>
+	<script src="{% static 'js/nouislider.min.js' %}"></script>
+	<script src="{% static 'js/countdown.js' %}"></script>
+	<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+	<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+	<!--gmaps Js-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="{% static 'js/gmaps.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+</body>
+{% endblock body %}
+
+</html>

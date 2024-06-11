@@ -1,0 +1,118 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'css/core-style.css' %}">
+{% endblock css_extra %}
+
+{% block top_banner_data %}
+{% endblock top_banner_data %}
+
+
+{% block section_data %}
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+      <div class="row">
+
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Username  :</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">{{user.username}}</p>
+                </div>
+              </div>
+              <hr>
+
+              <form action="" method="post">
+                  {% csrf_token %}
+                <div class="mb-3 ">
+                  <label for="exampleInputEmail1" class="form-label">Enter full name</label>
+                  <input type="type" name="name" class="form-control" 
+                  id="exampleInputEmail1" aria-describedby="emailHelp">
+                </div>
+              {% if email_exist %}
+              {% else %}
+              <div class="mb-3 ">
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" 
+                id="exampleInputEmail1" aria-describedby="emailHelp">
+              </div>
+              {% endif %}
+
+                <div class="mb-3 d-flex justify-content-between">
+                      <div class="col-6 w-75">
+                  <label for="exampleInputPassword1" class="form-label">Phone</label>
+                  <input type="text" inputmode="numeric" name="phone" class="form-control"
+                    id="exampleInputPassword1">
+                    </div>
+                    <div class="col-6 w-75">
+                  <label for="exampleInputPassword1" class="form-label">Alternative Phone</label>
+                  <input type="text" inputmode="numeric" name="alt_phone" class="form-control"
+                    id="exampleInputPassword1">
+                    </div>
+                </div>
+
+                <!-- <div class="ml-5 mr-5 form-check d-flex justify-content-between">
+
+                    <label for="location1">
+                    <input type="radio" id="location1" name="location" value="home" />
+                    Home</label>
+                    <label for="location2">
+                    <input type="radio" id="location2" name="location" value="office" />
+                    Office</label>
+                    <label for="location3">
+                    <input type="radio" id="location3" name="location" value="other" />
+                      Other</label>
+
+                </div>                -->
+
+                <!-- <div class="mb-3 d-flex justify-content-between">
+                  <div class="col-4">
+                  <label for="exampleInputEmail1" class="form-label">Landmark</label>
+                  <input type="text" name="landmark" class="form-control" 
+                  id="exampleInputEmail1" aria-describedby="emailHelp">
+                </div>
+                <div class="col-4">
+                  <label for="exampleInputEmail1" class="form-label">State</label>
+                  <input type="text" name="state" class="form-control" 
+                  id="exampleInputEmail1" aria-describedby="emailHelp">
+                </div>
+                <div class="col-4">
+                  <label for="exampleInputEmail1" class="form-label">Pin Code</label>
+                  <input type="text" inputmode="numeric" name="pincode" class="form-control" 
+                  id="exampleInputEmail1" aria-describedby="emailHelp">
+                </div>
+              </div> -->
+
+              <!-- <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Address</label>
+                  <textarea type="textarea" name="address" class="form-control" 
+                  id="exampleInputEmail1" aria-describedby="emailHelp"></textarea>
+              </div> -->
+
+              <div class="m-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              
+            </form>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock section_data %}
+
+{% block footer_area %}
+
+{% endblock footer_area %}

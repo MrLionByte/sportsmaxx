@@ -1,0 +1,333 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'css/core-style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+	.star {
+		font-size: 4vh;
+		cursor: pointer;
+	  }
+	   
+	  .one {
+		color: rgb(255, 0, 0);
+	  }
+	   
+	  .two {
+		color: rgb(255, 106, 0);
+	  }
+	   
+	  .three {
+		color: rgb(251, 255, 120);
+	  }
+	   
+	  .four {
+		color: rgb(255, 255, 0);
+	  }
+	   
+	  .five {
+		color: rgb(24, 159, 14);
+	  }
+</style>
+{% endblock css_extra %}
+
+{% block search_option_select %}{% endblock search_option_select %}
+
+{% block header_name %}
+<h1> Product Details</h1>
+{% endblock header_name %}
+
+
+{% block section_data %}
+
+	<!--================Single Product Area =================-->
+	<div class="product_image_area">
+		{% for data in product_data %}
+		<div class="container">
+			<div class="row s_product_inner">
+				
+				<div class="col-lg-6">
+					<div class="s_Product_carousel">
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ data.image_first.url }}" alt="">
+						</div>
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ data.image_second.url }}" alt="">
+						</div>
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ data.image_third.url }}" alt="">
+						</div>
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ data.image_fourth.url }}" alt="">
+						</div>
+					</div>
+				</div>
+
+				<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+				{% if messages %}
+				{% for message in messages %}
+				{% if message.tags == 'error' %}
+<script>
+    Swal.fire({
+        position: "top-end",
+        icon: "error!",
+        title: "Error ! {{ message }}",
+        showConfirmButton: false,
+        timer: 1500
+      });
+</script>
+{% elif message.tags == 'success' %}
+<script>
+    Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Success ! {{ message }}",
+        showConfirmButton: false,
+        timer: 1500
+      });
+</script>
+{% else %}
+<script>
+    Swal.fire({
+        position: "top-end",
+        icon: "info",
+        title: "Info ! {{ message }}",
+        showConfirmButton: false,
+        timer: 1500
+      });
+</script>
+				{% endif %}
+				{% endfor %}
+				{% endif %}
+
+				<div class="col-lg-5 offset-lg-1">
+					<div class="s_product_text">
+						<h3><b>{{data.product_id.product_name}}</b></h3>
+						<h5>Price : <span style="text-decoration: line-through;">₹ {{data.product_id.product_price}}</span></h5>
+						<h2>Now : ₹ {{data.product_id.product_price_after}}</h2>
+						<ul class="list">
+							<li><a class="active" href="#"><span>Category</span> : {{data.product_id.category_id}}</a></li>
+							<li><a href="#"><span>Availibility</span> : {% if data.status and not data.delete_opt %}
+									{% if data.product_size_qty.all %}
+										<span class="text-success">IN STOCK</span>
+									{% else %}<span class="text-danger">Out of Stock</span>{% endif %}
+									{% else %}<span class="text-danger">Out of Stock</span>{% endif %}
+								</a></li>
+						</ul>
+						<p>{{data.product_id.product_description}}</p>
+
+						<form action="{% url 'add_product_to_cart' %}" method="post">
+							{% csrf_token %}
+						<div class="product_count">
+							{% if data.product_size_qty.all %}
+							<select name="product_size" required>
+								<option value="" selected disabled>Select Size</option>
+								{% for size in data.product_size_qty.all %}
+									{% if size.product_quantity != 0 %}
+										<option value="{{ size.product_size }}">{{ size.product_size }}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+							{% else %}
+							<label >OUT OF STOCK</label>
+							{% endif %}
+							<input type="hidden" name="product_id" value="{{data.pk}}">
+						</div>
+						<div class="card_area d-flex align-items-center">
+							{% if data.product_size_qty.all and data.status and not data.delete_opt %}
+							<button class="primary-btn" type = "submit" >Add to Cart</button>
+							{% else %}
+							<button disabled class="primary-btn" >Add to Cart</button>
+							{% endif %}
+							<a class="icon_btn" href="{% url 'add_to_wishlist' data.pk %}?next={{request.path}}">
+								<img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/like--v1.png"
+								alt="like--v1"/>
+							</a>
+						</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor product_data %}
+	</div>
+	<!--================End Single Product Area =================-->
+
+	<!--================Product Description Area =================-->
+	<section class="product_description_area">
+		<div class="container">
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
+				</li>
+			
+				<!-- <li class="nav-item">
+					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
+					 aria-selected="false">Reviews</a>
+				</li> -->
+			</ul>
+		
+			<div class="tab-content" id="myTabContent">
+				{% for data in product_data %}
+				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+					<p>{{data.product_id.product_description}}</p>
+				</div>
+				{% endfor product_data %}
+			
+				<!-- <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="row total_rate">
+								<div class="col-6">
+									<div class="box_total">
+										<h5>Overall</h5>
+										<h4>4.0</h4>
+										<h6>(03 Reviews)</h6>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="rating_list">
+										<h3>Based on Reviews</h3>
+										<ul class="list">
+											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i></a></li>
+											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i></a></li>
+											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+													 </a></li>
+											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i></a></li>
+											<li><a href="#">1 Star <i class="fa fa-star"></i></i> </a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="review_list">
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-1.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+										commodo</p>
+								</div>
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-2.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+										commodo</p>
+								</div>
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-3.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+										commodo</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="review_box">
+								<h4>Add a Review</h4>
+								<form class="row contact_form" action="" method="post" id="contactForm" novalidate="novalidate">
+									<div class="col-md-12">
+										<h5>Your Rating:</h5>
+										<input type="hidden" id="ratingInput" name="rating" value="0">
+										<span onclick="gfg(1)" class="star" id="star1">★</span>
+								  		<span onclick="gfg(2)" class="star" id="star2">★</span>
+								  		<span onclick="gfg(3)" class="star" id="star3">★</span>
+								  		<span onclick="gfg(4)" class="star" id="star4">★</span>
+								  		<span onclick="gfg(5)" class="star" id="star5">★</span>
+								  		<h5 id="output">
+										Rating is: 0/5
+										</h5>
+									</div>
+									<input hidden name="user" value="{{user.username}}">
+									<div class="col-md-12">
+										<div class="form-group">
+											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Review" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea></textarea>
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" value="submit" class="primary-btn">Submit Now</button>
+									</div>
+
+								</form>
+							</div>
+						</div>
+					</div>
+				</div> -->
+
+			</div>
+		</div>
+	</section>
+	<!--================End Product Description Area =================-->
+
+{% endblock section_data %}
+
+{% block extra_script %}
+<script>
+	let stars = document.getElementsByClassName("star");
+	let output = document.getElementById("output");
+	let ratingInput = document.getElementById("ratingInput");
+	
+	// Function to update rating
+	function gfg(n) {
+		remove();
+		for (let i = 0; i < n; i++) {
+			if (n == 1) cls = "one";
+			else if (n == 2) cls = "two";
+			else if (n == 3) cls = "three";
+			else if (n == 4) cls = "four";
+			else if (n == 5) cls = "five";
+			stars[i].className = "star " + cls;
+		}
+		output.innerText = "Rating is: " + n + "/5";
+		// Update hidden input value
+		ratingInput.value = n;
+	}
+	
+	// To remove the pre-applied styling
+	function remove() {
+		for (let i = 0; i < stars.length; i++) {
+			stars[i].classList.remove("one", "two", "three", "four", "five");
+		}
+	}
+</script>
+{% endblock extra_script %}

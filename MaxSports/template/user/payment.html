@@ -1,0 +1,83 @@
+<!-- payment_app/templates/payment.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Razorpay Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h1>Razorpay Payment Form</h1>
+    <form id="payment-form" action="{% url 'initiate_payment' %}">
+        {% csrf_token %}
+        <label for="amount">Enter Amount (in INR):</label>
+        <input type="number" id="amount" name="amount" required>
+        <button type="submit" id="pay-button">Pay Now</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $("#pay-button").click(function(e) {
+                e.preventDefault(); 
+
+                const amount = $("#amount").val();
+                console.log(amount,"   amount  ")
+                const data = {
+                    amount: amount,
+                };
+            
+                $.ajax({
+                    type: "POST",
+                    url: "/user/checkout/add_to_order/",
+                    data: data,
+                    dataType: "json",
+                    
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                        console.log(data,"  working  ")
+                    },
+                    success: function(data) {
+                        console.log("   success  ")
+                        
+                        const options = {
+                            key: data.key,
+                            amount: data.amount,
+                            currency: data.currency,
+                            order_id: data.id,
+                            name: data.name,
+                            description: data.description,
+                            image: data.image,
+                            handler: function(response) {
+                             
+                                if (response.razorpay_payment_id) {
+                                    console.log('Workingggg')
+                                  
+                                    window.location.href = "/payment_success/";
+                                } else {
+                                    console.log('Failedddd')
+                                    
+                                    window.location.href = "/payment_failed/";
+                                }
+                            },
+                            prefill: {
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "customer_contact",
+                            },
+                        };
+
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+                    },
+                    error: function(error) {
+                        console.error("Error initiating payment:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

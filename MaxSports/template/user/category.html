@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+	{% load static %}
+
+<head>
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<link rel="shortcut icon" href="{% static 'img/sport_max_fav.png' %}">
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>Sports-Maxx</title>
+	{% block css_extra %}{% endblock css_extra %}
+
+	<!--
+            CSS
+            ============================================= -->
+	<link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/themify-icons.css'%} ">
+	<link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+	<link rel="stylesheet" href="{% static 'css/nouislider.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<link type="text/css" href="@@path/vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+
+<body id="category">
+
+	<!-- Start Header Area -->
+	<header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+						<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="{% url 'home' %}"><img src="{% static 'img/sortsMax_logo.png' %}" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					{% block top_banner_data %}
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto">
+							<li class="nav-item "><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false"><a class="nav-link" href="{% url 'all_products_list' %}">Shop</a></a>
+								<ul class="dropdown-menu">
+									{% for data in category_data %}
+								
+									<li class="nav-item"><a  class="nav-link" name="products_id" href="{% url 'user_products' data.pk %}">{{data.category_name}}</a></li>
+									
+									{% endfor %}
+								</ul>
+							</li>
+
+							{% if user.is_authenticated %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">{{ user.username }}</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'my_account' %}">Profile</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_orders' %}">My_order</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_logout' %}">Logout</a></li>
+									<!-- <li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li>
+									<li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li>
+									<li class="nav-item"><a class="nav-link" href="single-blog.html"></a></li> -->
+								</ul>
+							</li>
+
+							{% else %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">Login</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_sign_in' %}">Login</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'user_sign_up' %}">Sign-up</a></li>
+									
+								</ul>
+							</li>
+
+							{% endif %}
+
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">About</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'terms' %}">Terms</a></li>
+									<!-- <li class="nav-item"><a class="nav-link" href="elements.html">Elements</a></li> -->
+								</ul>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li class="nav-item"><a href="{% url 'show_wishlist' %}" class="cart"><span>
+								<img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/like--v1.png" alt="like--v1"/></span></a></li>
+								
+								{% if user.is_authenticated %}
+								<li class="nav-item"><a href="{% url 'cart_show' %}" class="cart"><span>
+									<img width="24" height="24" src="https://img.icons8.com/windows/32/shopping-bag.png" alt="shopping-bag"/></span></a></li>
+								{% else %}
+								<li class="nav-item"><a href="{% url 'show_wishlist' %}" class="cart"><span>
+									<img width="24" height="24" src="https://img.icons8.com/windows/32/shopping-bag.png" alt="shopping-bag"/></span></a></li>
+								{% endif %}
+
+								{% block search_option_select %}
+								<li class="nav-item">
+								<button class="search"><span id="search">
+									<img width="24" height="24" src="https://img.icons8.com/ios-filled/50/search--v1.png" alt="search--v1"/>
+								</span></button>
+							</li>
+							{% endblock search_option_select %}
+						</ul>
+					</div>
+						<!-- End top bar -->
+						{% endblock top_banner_data %}
+				</div>
+			</nav>
+		</div>
+		{% block search_option %}
+		<div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between" action="{% url 'all_products_list' %}" method="post">
+					{% csrf_token %}
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here" name="search" autocomplete="off">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div>
+		{% endblock search_option %}
+	</header>
+	<!-- End Header Area -->
+
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					{% block header_name %}
+					<h1>Shop </h1>
+					{% endblock header_name %}
+					<nav class="d-flex align-items-center">
+								{% if breadcrumbs %}
+										<p style="background-color: transparent;">
+											{% include "dynamic_breadcrumbs/breadcrumbs.html" with breadcrumbs=breadcrumbs%}
+										</p>
+								{% endif %}
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	{% block section_data %}
+	<!-- Select Categories ( Browse ) -->
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-3 col-lg-4 col-md-5">
+				<form action="{% url 'all_products_list'  %}" method="post">
+				{% block category_browse %}
+				
+				<div class="sidebar-categories">
+					<div class="head">Browse Categories</div>
+					{% if category_data %}
+					<input type="text" hidden name="filter_type" value="variant_form">
+					<ul class="main-categories">
+						{% for data in category_data %}
+						<li class="main-nav-list"><input class="pixel-radio" type="radio" id="variantfilterForm" name="category_name"
+							value="{{ data.pk }}">
+							<label for="">{{ data.category_name }}</label></li>
+						{% endfor %}
+					</ul>
+
+						{% endif %}
+				</div>
+				{% endblock category_browse %}
+				<!-- Select Categories ( Browse ) -->
+				<!-- Select Filters ( Filters ) -->
+				<div class="sidebar-filter mt-50">
+					<div class="top-filter-head">Variant Filters</div>
+					<div class="common-filter">
+						<div class="head">Variant</div>
+						
+							{% csrf_token %}
+							<input type="text" hidden name="filter" value="filter">
+							<input type="text" hidden name="filter_type" value="variant_form">
+							<ul>
+								{% for variant_name in unique_variant_names %}
+								<li class="filter-list"><input class="pixel-radio" type="radio" id="variantfilterForm" name="variant_name" value="{{variant_name}}">
+									<label for="">{{variant_name}}</label></li>
+								{% endfor %}
+							</ul>
+
+					</div>
+					<div class="common-filter">
+						<div class="head">Color</div>
+						<form action="{% url 'all_products_list' %}" method="post">
+
+							<ul>
+								<input type="text" hidden name="filter" value="filter_form">
+								{% for color_names in unique_color_names %}
+								<li class="filter-list"><input class="pixel-radio" type="radio" id="variantfilterForm" 
+									name="color" value="{{color_names}}"><label >{{color_names}}</label></li>
+								{% endfor %}
+							</ul>
+
+					</div>
+					<div class="common-filter">
+						<div class="head">Price</div>
+
+							<input type="text" hidden name="priceRange" value="price">
+							<div>
+							<!-- Other form fields -->
+							
+							<div class="price-range-area">
+									<input type="text" class="w-50" name="lower_value" id="lower-value-input" placeholder="min price" autocomplete="off">
+									<input type="text" class="w-50 mt-2" name="upper_value" id="upper-value-input" placeholder="max price" autocomplete="off">
+							</div>
+							
+							<!-- Other form fields -->
+							<button class="mt-2 ml-5 btn btn-primary" type="submit">Filter</button>
+						</div>
+
+						</form>
+					
+					</div>
+				</div>
+				<!-- End Filters ( Filters ) -->
+
+			</div>
+			<div class="col-xl-9 col-lg-8 col-md-7">
+				<!-- Start Filter Bar -->
+				
+				<div class="filter-bar d-flex flex-wrap align-items-center">
+					{% block filterbased %}
+					<div class="sorting">
+						<select id="sort-select">
+							<option value="1"> New Arrival </option>
+							<option value="2">High to Low</option>
+							<option value="3">Low to High</option>
+							<option value="4"> A - Z </option>
+							<option value="5"> Z - A </option>
+							<option value="6">Featured</option>
+						</select>
+					</div>
+					{% endblock filterbased %}
+					<div class="sorting mr-auto">
+						<!-- <select id="sort-select_page">
+							<option value="9">Show 9</option>
+							<option value="12">Show 12</option>
+							<option value="15">Show 15</option>
+						</select> -->
+					</div>
+					<div class="pagination">
+						{% block pagination_up %}
+
+						{% if all_products.has_previous %}
+            					<a href="?page={{ all_products.previous_page_number }}" class="prev-arrow">
+                				<i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+            					</a>
+        				{% endif %}
+
+        						<!-- <a href="?page={{ all_products.number }}" class="active">{{ all_products.number }}</a> -->
+        
+        				{% for num in all_products.paginator.page_range %}
+            				{% if num != all_products.number %}
+                				{% if num > all_products.number|add:'-2' and num < all_products.number|add:'2' %}
+                    				<a href="?page={{ num }}">{{ num }}</a>
+                				{% endif %}
+            				{% endif %}
+        				{% endfor %}
+        
+									<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+									<a href="?page={{ all_products.paginator.num_pages }}">{{ all_products.paginator.num_pages }}</a>
+        
+						{% if all_products.has_next %}
+							<a href="?page={{ all_products.next_page_number }}" class="next-arrow">
+								<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+							</a>
+						{% endif %}
+						{% endblock pagination_up %}
+
+					</div>
+				</div>
+				<!-- End Filter Bar -->
+				{% block section_messages %}
+				{% endblock section_messages %}
+				<!-- Start Best Seller -->
+				<section class="lattest-product-area pb-40 category-list">
+					<div class="row">
+
+						{% block load_product %}
+						{% if all_products %}
+						{% for product in all_products %}
+						<div class="col-lg-4 col-md-6">
+							<div class="single-product d-flex flex-column">
+								<a href="{% url 'product_details' product.pk %}">
+								{% if not product.product_size_qty.all %}
+								<div class="stamp" style="position: absolute; top: 10px; left: 10px; width: 50px; height: 50px; background-color: red;
+								color: white; display: flex; justify-content: center; align-items: center;">OUT OF STOCK</div>
+									{% endif %}
+								{% if product.featured %}
+								<div class="stamp" style="position: absolute; top: 10px; left: 10px;
+								color: white; display: flex; justify-content: center; align-items: center;">
+									<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/000000/filled-star.png" alt="filled-star"/>
+								</div>
+								{% endif %}
+								<img style="width: 255px; height: 255px;" class="img-fluid" src="{{ product.image_first.url }}" alt=""></a>
+								<a href="{% url 'add_to_wishlist' product.pk %}?next={{request.path}}" id="add-to-wishlist-button" class="btn btn-outline-info w-75 ml-4" data-product-id="{{ data.pk }}">Add to wishlist</a>
+								
+								<div class="product-details text-center p-2">
+									<h6>{{product.product_id}}</h6>
+									<div class="price">
+										<h6>₹ {{ product.product_id.product_price_after }}</h6>
+										
+										{% if product.status %}
+										<h6 class="l-through">₹ {{ product.product_id.product_price }} </h6>
+										{% if product.product_id.offer_percentage >= product.product_id.category_id.offer_percentage %}
+											<span class="text-dark">(% {{product.product_id.offer_percentage}})</span>
+										{% else %}
+											<span class="text-dark">(% {{product.product_id.category_id.offer_percentage}})</span>
+										{% endif %}
+										{% endif %}
+									</div>
+									
+									<div class="prd-bottom">
+										<a href="{% url 'product_details' product.pk %}">
+											<!-- <p class="hover-text"> Details</p> -->
+										</a>
+									   
+									</div>
+								</div>
+							</div>
+						</div>
+					
+						{% endfor %}
+						{% else %}
+						<div class="col-lg-4 col-md-6">
+							<div class="single-product">
+								<h3 class="text-warning">No Product Available in this category</h3>
+							</div>
+						</div>
+						{% endif %}
+						{% endblock load_product %}
+						
+					</div>
+				</section>
+				<!-- End Best Seller -->
+				
+
+				<!-- Start Filter Bar -->
+				<div class="filter-bar d-flex flex-wrap align-items-center mb-3">
+					<div class="sorting mr-auto">
+						<!-- <select>
+							<option value="1">Show 9</option>
+							<option value="1">Show 12</option>
+							<option value="1">Show 15</option>
+						</select> -->
+					</div>
+					
+ 					<div class="pagination">
+						{% block pagination_down %}
+
+						{% if all_products.has_previous %}
+            					<a href="?page={{ all_products.previous_page_number }}" class="prev-arrow">
+                				<i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+            					</a>
+        				{% endif %}
+
+        						<!-- <a href="?page={{ all_products.number }}" class="active">{{ all_products.number }}</a> -->
+        
+        				{% for num in all_products.paginator.page_range %}
+            				{% if num != all_products.number %}
+                				{% if num > all_products.number|add:'-2' and num < all_products.number|add:'2' %}
+                    				<a href="?page={{ num }}">{{ num }}</a>
+                				{% endif %}
+            				{% endif %}
+        				{% endfor %}
+        
+									<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+									<a href="?page={{ all_products.paginator.num_pages }}">{{ all_products.paginator.num_pages }}</a>
+        
+						{% if all_products.has_next %}
+							<a href="?page={{ all_products.next_page_number }}" class="next-arrow">
+								<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+							</a>
+						{% endif %}
+
+						{% endblock pagination_down %}
+					</div>
+				</div>
+				<!-- End Filter Bar -->
+			</div>
+		</div>
+	</div>
+
+	{% block  related_product_area_section_gap %}
+
+	<!-- End related-product Area -->
+	{% endblock related_product_area_section_gap %}
+
+	{% endblock section_data %}
+
+	{% block footer_area %}
+	<!-- start footer Area -->
+	<!-- start footer Area -->
+	<footer class="footer-area section_gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3  col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>About Us</h6>
+						<p>
+						Welcome to Sports Maxx, your ultimate destination for premium sports equipment and apparel.
+						 Our mission is to fuel your passion and elevate your game with the gear that champions trust.
+						</p>
+					</div>
+				</div>
+				<div class="col-lg-4  col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>Newsletter</h6>
+						<p>Stay update with our latest</p>
+						<div class="" id="mc_embed_signup">
+
+							<form target="_blank" novalidate="true" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
+							 method="get" class="form-inline">
+
+								<div class="d-flex flex-row">
+
+									<input class="form-control" name="EMAIL" placeholder="Enter Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Email '"
+									 required="" type="email">
+
+
+									<button class="click-btn btn btn-default"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></button>
+									<div style="position: absolute; left: -5000px;">
+										<input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value="" type="text">
+									</div>
+
+									<!-- <div class="col-lg-4 col-md-4">
+												<button class="bb-btn btn"><span class="lnr lnr-arrow-right"></span></button>
+											</div>  -->
+								</div>
+								<div class="info"></div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3  col-md-6 col-sm-6">
+					<div class="single-footer-widget mail-chimp">
+						<h6 class="mb-20">Instragram Feed</h6>
+						<ul class="instafeed d-flex flex-wrap">
+							<li><img src="{% static 'img/i1.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i2.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i3.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i4.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i5.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i6.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i7.jpg' %}" alt=""></li>
+							<li><img src="{% static 'img/i8.jpg' %}" alt=""></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>Follow Us</h6>
+						<p>Let us be social</p>
+						<div class="footer-social d-flex align-items-center">
+							<a href="#"><i class="fa fa-facebook"></i></a>
+							<a href="#"><i class="fa fa-twitter"></i></a>
+							<a href="#"><i class="fa fa-dribbble"></i></a>
+							<a href="#"><i class="fa fa-behance"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!-- End footer Area -->
+	{% endblock footer_area %}
+
+
+
+	<!-- Modal Quick Product View -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="container relative">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="product-quick-view">
+					<div class="row align-items-center">
+						<div class="col-lg-6">
+							<div class="quick-view-carousel">
+								<div class="item" style="background: url(static/img/organic-food/q1.jpg);">
+
+								</div>
+								<div class="item" style="background: url(static/img/organic-food/q1.jpg);">
+
+								</div>
+								<div class="item" style="background: url(static/img/organic-food/q1.jpg);">
+
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="quick-view-content">
+								<div class="top">
+									<h3 class="head">Mill Oil 1000W Heater, White</h3>
+									<div class="price d-flex align-items-center"><span class="lnr lnr-tag"></span> <span class="ml-10">$149.99</span></div>
+									<div class="category">Category: <span>Household</span></div>
+									<div class="available">Availibility: <span>In Stock</span></div>
+								</div>
+								<div class="middle">
+									<p class="content">Mill Oil is an innovative oil filled radiator with the most modern technology. If you are
+										looking for something that can make your interior look awesome, and at the same time give you the pleasant
+										warm feeling during the winter.</p>
+									<a href="#" class="view-full">View full Details <span class="lnr lnr-arrow-right"></span></a>
+								</div>
+								<div class="bottom">
+									<div class="color-picker d-flex align-items-center">Color:
+										<span class="single-pick"></span>
+										<span class="single-pick"></span>
+										<span class="single-pick"></span>
+										<span class="single-pick"></span>
+										<span class="single-pick"></span>
+									</div>
+									<div class="quantity-container d-flex align-items-center mt-15">
+										Quantity:
+										<input type="text" class="quantity-amount ml-15" value="1" />
+										<div class="arrow-btn d-inline-flex flex-column">
+											<button class="increase arrow" type="button" title="Increase Quantity"><span class="lnr lnr-chevron-up"></span></button>
+											<button class="decrease arrow" type="button" title="Decrease Quantity"><span class="lnr lnr-chevron-down"></span></button>
+										</div>
+
+									</div>
+									<div class="d-flex mt-20">
+										<a href="#" class="view-btn color-2"><span>Add to Cart</span></a>
+										<a href="#" class="like-btn"><span class="lnr lnr-layers"></span></a>
+										<a href="#" class="like-btn"><span class="lnr lnr-heart"></span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	{% block extra_script %}
+	<script>
+		$(document).ready(function() {
+			$("#sort-select_page").change(function() {
+				var selectedOption = $(this).val();
+				if (selectedOption) {
+					window.location.href = "{% url 'all_products_list' %}?page_content_count=" + selectedOption;
+				}
+			});
+		});
+
+		$(document).ready(function() {
+			$('#sort-select').change(function() {
+				var selectedOption = $(this).val();
+				if (selectedOption) {
+					window.location.href = "{% url 'all_products_list' %}?sort_id=" + selectedOption;
+				}
+			});
+		});
+
+		document.addEventListener('DOMContentLoaded', function() {
+    $( "#price-range" ).slider({
+        range: true,
+        min: 0,
+        max: 1000,
+        values: [ 75, 300 ],
+        slide: function( event, ui ) {
+            $( "#lower-value" ).text( "₹" + ui.values[ 0 ] );
+            $( "#upper-value" ).text( "₹" + ui.values[ 1 ] );
+          
+            $( "#lower-value-input" ).val(ui.values[ 0 ]);
+            $( "#upper-value-input" ).val(ui.values[ 1 ]);
+            
+            console.log("Lower value:", ui.values[0]);
+            console.log("Upper value:", ui.values[1]);
+    
+            document.getElementById('your-form-id').submit();
+        }
+    });
+});
+		</script>
+	{% endblock extra_script %}
+	<script src="{% static 'js/vendor/jquery-2.2.4.min.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+	 crossorigin="anonymous"></script>
+	<script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+	<script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+	<script src="{% static 'js/jquery.sticky.js' %}"></script>
+	<script src="{% static 'js/nouislider.min.js' %}"></script>
+	<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+	<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+	<!--gmaps Js-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="{% static 'js/gmaps.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>

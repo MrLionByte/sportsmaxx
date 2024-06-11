@@ -1,0 +1,166 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<style>
+
+.dropbtn {
+    background-color: #2d3b2d;
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+  {% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+{% block dashboard %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+    <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between ">
+            <h4 class="card-title">Order Details of ID : {{user_data.id}}</h4>
+            <a href="{% url 'order_processing' %}"><button type="button" class="btn btn-outline-success">Go back</button></a>
+          </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Email </th>
+                  <th> Username </th>
+                  <th> First name </th>
+                  <th> Last name </th>
+                  <th>status</th>
+                  <th class="text-center"> Action </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{user_data.email}}</td>
+                  <td> {{user_data.username}} </td>
+                  <td> {{user_data.first_name}} </td>
+                  <td>  {{user_data.last_name}} </td>
+                  <td style="color: brown;">
+                    {% if user_data.is_active %}
+                        <p class="text-success">Active</p>
+                    {% else %} 
+                        <p class="text-danger">Block</p>
+                    {% endif %}
+                </td>
+                  <td class="d-flex justify-content-center"> 
+                    {% if user_data.is_active %}
+                    <a href="{% url 'user_action_unblock' user_data.id %}"  class="btn btn-danger" >Block</a>
+                    {% else %}
+                     <a href="{% url 'user_action_block' user_data.id %}" class="btn btn-primary" >UnBlock</a>
+                    {% endif %}
+                    
+                    <!-- <a class="" href="">
+                    <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true"></button></a> -->
+                 </td>
+                </tr>
+
+              </tbody>
+            </table>
+                  {% if addresses %}
+                  <h5>Address of user</h5>
+                  {% else %}
+                  <h5 class="text-warning">No address Found</h5>
+                  {% endif %}
+
+                {% if addresses %}
+                {% for address in addresses %}
+                    <h6 class="text-info">{{forloop.counter}}</h6>
+                  <p class="text-dark">{{address.full_name}}</p>
+                  <p class="text-dark"> {{address.address_type}}, {{address.accessible}},{{address.landmark}}</p>
+                  <p class="text-dark">{{address.area}}, {{address.post_office}}, {{address.pincode}}</p>
+                  <p class="text-dark">{{address.city}}, {{address.state}}, {{address.pincode}}</p> 
+                  <p class="text-dark">{{address.phone_no}}, {{address.alternative_phone}}</p>                  
+                  <br>
+                  <br>
+                  <br>
+                {% endfor %}
+                {% endif %}
+                
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+{% endblock dashboard %}
+
+{% block js_scripts %}
+<script>
+document.getElementById('statusSelect').addEventListener('change', function() {
+    document.getElementById('statusForm').submit(); // Automatically submit the form when option is selected
+});    
+</script>
+{% endblock js_scripts %}

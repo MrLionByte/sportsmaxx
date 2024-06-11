@@ -1,0 +1,325 @@
+{% extends 'user/category.html' %}
+{% load static %}
+{% block css_extra %}
+
+<style>
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800);
+
+* { box-sizing: border-box; }
+
+[class*="large"] {
+  display: block;
+  float: left;
+  padding: 0;
+}
+
+.row .row > [class*="large"]:first-child{ padding-left: 0;  }
+
+[class*="large"] img {
+  width: 100%;
+  height: auto;
+}
+
+.large { width: 50%; 
+}
+
+body {
+  background-color: #ffc960 ;
+}
+
+.row:before, 
+.row:after { content:""; display:table; }
+.row:after { clear:both; }
+
+.row {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 24px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300 ;
+  color: #707584;
+}
+
+h2 {
+  color: #666666;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.column1 {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;  
+  padding: 60px ;
+  background-color: #f2f2f2;
+}
+
+.column1 span {
+  padding: 7px 6px 1px 1px ;
+  float: right ;
+}
+
+.column1, .column2 {
+  height: 890px;
+}
+
+.add span {
+  color: #66cc33 !important;
+}
+
+.credit:hover {
+    box-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+    border: 4px solid #8393ca;
+}
+
+.credit {
+  border-radius: 5px;
+  border: 2px solid #e1e1e1;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300 ;
+}
+
+.credit {
+  margin: 30px auto ;
+  background-color: #fff;
+}
+
+.credit img {
+  max-width: 30% ;
+}
+
+.content-container {
+  padding: 20px ;
+}
+
+.content-container p {
+  font-size: 16px;
+  color: #b2b2b2;
+}
+
+.column2 {
+  padding: 60px 30px 70px 60px;
+  box-shadow: -6px 6px 20px rgba(0,0,0,0.3);
+}
+
+.column2 {
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.column2-title2 span {
+  font-size: 30px;
+}
+
+.column2-title2 {
+  float: right; 
+  margin-top: -70px;
+}
+
+.column2-title2 sup {
+  font-size: 14px;
+}
+
+.column2-title {
+   padding-left: 50px ;
+}
+
+hr {
+  margin-left: 50px ;
+  opacity: .2;
+  margin-top: 70px ;
+  margin-bottom: 60px ;
+  width: 90% ;
+}
+
+.column2 span {
+  font-weight: 600 ;
+  color: #444751;
+  float: right;
+}
+
+.transaction-info h3 {
+  font-size: 18px;
+  color: #333333 ;
+  font-weight: 600;
+}
+
+.transaction-info {
+  padding-left: 2% ;
+  display: inline-block ;
+}
+
+.transaction-info p {
+  font-size: 14px;
+  color: #999999 ;
+  margin: -14px 0 5px 0 ;
+}
+
+.transaction span {
+  font-size: 18px;
+  color: #8393ca;
+}
+
+.transaction sup {
+  font-size: 10px;
+}
+
+.transaction  {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.transaction span {
+  float: right ;
+  padding-top: 15px;
+}
+
+.transaction-image {
+  padding-left: 12px;
+  display: inline-block;
+}
+
+.transaction-image img {
+  padding-bottom: 7px  ;
+  margin-left: 40px ;
+}
+
+.transaction {
+  padding: 20px ;
+}
+</style>
+
+{% endblock css_extra %}
+
+{% block header_name %}
+					<h1>Cart</h1>
+{% endblock header_name %}
+{% block section_data %}
+
+<section class="cart_area">
+    <div class="container">
+        <div class="cart_inner">
+            <div class="row">
+                <div class="large">
+                  <div class="column1">
+                    <h1>My Wallets <span><img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463341053/Add_r2mtem.png' id='addAccount'></span></h1>
+                    <div class="credit visa">
+                      <div class="content-container">
+                        <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463341474/Visa_udke8r.png'>
+                        <h2>**** **** **** 2562</h2>
+                        <p>Valid Thru: 12/17</p>
+                      </div>
+                    </div>
+                    <div class="credit amex">
+                     <div class="content-container">
+                        <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463341473/Amex_vplsvv.png'>
+                        <h2>**** **** **** 2562</h2>
+                        <p>Valid Thru: 12/17</p>
+                      </div>
+                      </div>
+                      <div class="credit mc">    
+                        <div class="content-container">
+                        <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463341473/Middle_vsnsoj.png'>
+                        <h2>**** **** **** 2562</h2>
+                        <p>Valid Thru: 12/17</p>
+                      </div></div>
+                    </div>
+                  </div>
+                  <div class="column2">
+                  <div class="large">
+                     <div class="column2-title">
+                       <h1>Current Balance</h1>
+                      </div>
+                     <div class="column2-title2">
+                      <h1><span>$729.<sup>00</sup></span></h1>
+                               </div>
+                    <hr>
+                  </div>
+                    <div class="transaction">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Minus_bnueat.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>Apple iPhone 6, 6g GB</h3>
+                        <p>Electronics #343223  - 12 July, 2015</p>
+                      </div>
+                      <span>$650.<sup>00</sup></span>
+                    </div>
+                    <div class="transaction">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Minus_bnueat.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>Founds Added</h3>
+                        <p>Payment  #343212  - 11 July, 2015</p>
+                      </div>
+                      <span>$900.<sup>00</sup></span>
+                    </div>
+                    <div class="transaction add">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Add_hfqdjk.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>Energy Bill</h3>
+                        <p>#343566  - 11 July, 2015</p>
+                      </div>
+                      <span>$84.<sup>96</sup></span>
+                    </div>
+                    <div class="transaction">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Minus_bnueat.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>Mega Image SRL</h3>
+                        <p>Food&Health #34365  - 11 July, 2015</p>
+                      </div>
+                      <span>$112.<sup>75</sup></span>
+                    </div>
+                    <div class="transaction">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Minus_bnueat.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>ATM DV24</h3>
+                        <p> #343253  - 09 July, 2015</p>
+                      </div>
+                      <span>$200.<sup>00</sup></span>
+                    </div>
+                    <div class="transaction">
+                    <div class="transaction-image">
+                      <img src='https://res.cloudinary.com/dzavwgc6d/image/upload/v1463342852/Minus_bnueat.png'>
+                    </div>
+                      <div class="transaction-info">
+                        <h3>Lukoil Station</h3>
+                        <p>Gas #343279  - 09 July, 2015</p>
+                      </div>
+                      <span>$190.<sup>48</sup></span>
+                 </div>
+                    </div>
+              </div>
+    </div>
+</section>
+
+{% endblock section_data %}
+
+{% block extra_script %}
+<script>
+    $(document).ready(function() {
+        $('#addAccount').mouseenter(function() {
+          $('#addAccount').fadeTo('fast', 1);
+        });
+        $('#addAccount').mouseleave(function() {
+          $('#addAccount').fadeTo('fast', 0.5);
+        });
+      });
+      
+      $(document).ready(function() {
+        $('#addAccount').click(function() {
+          var newNumber = parseInt(prompt("What is your account number?"));
+           alert('Thank you! We will add your account after verification.')
+        });
+      });
+</script>
+{% endblock extra_script %}

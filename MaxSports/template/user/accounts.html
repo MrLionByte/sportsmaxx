@@ -1,0 +1,137 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'css/core-style.css' %}">
+{% endblock css_extra %}
+
+{% block search_option_select %}{% endblock search_option_select %}
+
+{% block search_option %}{% endblock search_option %}
+
+{% block section_data %}
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+      <div class="row">
+    
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+             
+              <img src="" >
+        
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+           
+                class="rounded-circle img-fluid" style="width: 150px;">
+              <h5 class="my-3">Hi {{ user.username }}</h5>
+              <div class="d-flex  justify-content-center " style="flex-direction: column;">
+                <a href="{% url 'edit_profile' %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" style="width: 200px;">Edit Profile</button> </a>
+                {% if user_address_details1 %}
+                <a href="{% url 'add_account_address' %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" style="width: 200px;">Add Address</button> </a>
+                
+                {% endif %}
+                <a href="{% url 'change_password' %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" style="width: 200px;">Change Password</button> </a>
+                <a href="{% url 'user_orders' %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" style="width: 200px;">Ordered Products</button> </a>
+                <a href="{% url 'user_wallet' %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" style="width: 200px;">My Wallet</button> </a>
+                <p>Referral Code : {{referral.referral_code}}</p>
+                <p> On every referral you will receive Rs: 150</p>
+              </div>
+              
+              <div  class="  alert alert" role="alert">
+                {% if messages  %}
+                {% for message in messages %}
+                        <div class="">
+                          {% if message.tags == 'error' %}
+                            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div class="">
+                            {{message}}
+                                    </div>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-success d-flex align-items-center" role="alert">
+                              <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"></svg>
+                                  <div class="">
+                          {{message}}
+                                  </div>
+                          </div>
+                            {% endif %}
+                        </div>
+                {% endfor %}
+                {% endif %}
+                   
+              </div>
+            
+            </div>
+          </div>
+           </div>
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Username</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">{{user.username}}</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Email</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">{{user.email}}</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Name</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">{{user.get_full_name}}</p>
+                </div>
+              </div>
+              <hr>
+             
+      
+
+                  {% if user_address_details1 %}
+                    {% for address in user_address_details1 %}
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Address : {{forloop.counter}} :</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">Name : {{address.full_name}}</p>
+                  <p class="text-muted mb-0">Phone :{{address.phone_no}},  Alternative Ph :{{address.alternative_phone}}</p>
+                  <p class="text-muted mb-0">{{address.address_type}},<br>{{address.accessible}},{{address.area}},near {{address.landmark}},{{address.city}}<br>
+                                                                Po : {{address.post_office}},Pin :{{address.pincode}}, {{address.state}}
+                    <div class="d-flex justify-content-end">
+                    <a class="text-info btn btn-outline-info justify-content-end mr-2" href="{% url 'edit_address' address.id %}">Edit</a>
+                    <a class="text-danger btn btn-outline-danger justify-content-end ml-2" href="{% url 'delete_address' address.id %}">Delete</a>
+                </div></p></div> 
+              </div>
+                {% endfor %}
+     
+                  {% else %}
+                  <a href="{% url 'add_account_address'  %}" class=" ms-1 my-2 mx-5"><button type="submit" class="btn btn-outline-primary" 
+                    style="width: 200px;">Add Address </button> </a>
+                    <p class="text-danger m-3">No Address Found</p>
+                  {% endif %}
+                  
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock section_data %}

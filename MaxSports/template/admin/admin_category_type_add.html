@@ -1,0 +1,58 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center align-items-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <div class="card-body">
+        <h4 class="card-title text-center">NEW CATEGORY</h4>
+        <p class="card-description text-center"> Basic form elements </p>
+
+        <form class="forms-sample" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+         
+          <div class="form-group ml-3 mr-3">
+            <label for="exampleInputName1">Type Name</label>
+            <input type="text" name="type" class="form-control" id="exampleInputName1" placeholder="Type name">
+          </div>     
+              <div class="m-3">
+                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                    <a href="{% url 'admin_types_for_category' %}"><button class="btn btn-light">Cancel</button></a>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

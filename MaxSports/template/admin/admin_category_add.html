@@ -1,0 +1,69 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center align-items-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card ">
+      <div class="card-body">
+        <h4 class="card-title text-center">NEW CATEGORY</h4>
+        <p class="card-description text-center"> Basic form elements </p>
+
+        <form class="forms-sample" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+         
+          <div class="form-group ml-3 mr-3">
+            <label for="exampleInputName1">Category Name</label>
+            <input type="text" name="categoryName" class="form-control" id="exampleInputName1" placeholder="product name">
+          </div>
+          <div class="form-group ml-3 mr-3">
+            {% for type in available_types %}
+            <input type="radio" required name="available_types" value="{{ type.id }}"> <p>{{ type.type }}</p>
+              {% endfor %}
+          </div>
+          <label for="exampleInputName1" class="ml-3">Sample Image <b>↓</b></label>
+          <div class="form-group col-12 d-flex justify-content-between">
+          
+              <div class="m-3 d-flex justify-content-between">
+                
+                <input type="file" id="avatar" name="category_avatar" accept="image/png, image/jpeg ,image/jpg" />
+              </div>         
+              <div class="m-3">
+                    <button type="submit" class="btn btn-primary mr-2" data-toggle="sweet-alert" data-sweet-alert="success">Submit</button>
+                    <a href="{% url 'admin_category' %}" class="btn-outline-light">Cancel</a>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}

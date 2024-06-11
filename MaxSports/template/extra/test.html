@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop and Upload Image</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
+</head>
+<body>
+    <div class="container">
+        <input type="file" id="inputImage" class="mb-3">
+        <div id="image-container" class="mb-3">
+            <img id="image" src="" alt="Uploaded Image" class="img-fluid">
+        </div>
+        <button id="cropButton" class="btn btn-primary">Crop Image</button>
+        <img id="cropped-image" src="" alt="Cropped Image" class="img-fluid mt-3" style="display:none;">
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const inputImage = document.getElementById('inputImage');
+            const image = document.getElementById('image');
+            const cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 1,
+                crop(event) {
+                    console.log(event.detail.x);
+                    console.log(event.detail.y);
+                    console.log(event.detail.width);
+                    console.log(event.detail.height);
+                    console.log(event.detail.rotate);
+                    console.log(event.detail.scaleX);
+                    console.log(event.detail.scaleY);
+                },
+            });
+
+            inputImage.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    image.src = event.target.result;
+                    cropper.replace(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            const cropButton = document.getElementById('cropButton');
+            cropButton.addEventListener('click', () => {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                });
+                document.getElementById('cropped-image').src = canvas.toDataURL();
+                document.getElementById('cropped-image').style.display = 'block';
+            });
+
+            const uploadForm = document.getElementById('uploadForm');
+            uploadForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const croppedImage = document.getElementById('cropped-image');
+                const formData = new FormData();
+                formData.append('image', croppedImage);
+                $.ajax({
+                    type: 'POST',
+                    url: '/your-upload-url/', // Update with your Django view URL
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log('Upload successful');
+                    },
+                    error: function(error) {
+                        console.error('Upload failed', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

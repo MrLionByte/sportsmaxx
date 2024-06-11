@@ -1,0 +1,93 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+  swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+  swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+  swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+  
+{% block dashboard %}
+<div class="main-panel">
+  <div class="content-wrapper d-flex justify-content-center">
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card ">
+          <div class="card-body">
+            <h4 class="card-title text-center">ADD VARIANT</h4>
+            <p class="card-description text-center"> Add variant Size and Quantity </p>
+            <form class="forms-sample" method="post" action="{% url 'admin_add_size_qty' %}"
+              enctype="multipart/form-data">
+
+              {% csrf_token %}
+              <div class="form-group ">
+
+                <div class="col-12 mb-5">
+                  <label for="exampleInputEmail3">Color</label>
+                  <select class="form-control" id="select_color" name="select_color" required>
+                    <option value="" selected disabled>Select Color Product</option>
+                    {% for data in products_data %}
+                    {% if data.product_id %}
+
+                    <option value="{{ data.id }}">{{ data.product_color }}({{ data.product_id.product_name}})</option>
+                    {%endif%}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-12 mb-5">
+                  <label for="exampleInputEmail3">Size</label>
+                  <select name="product_size" class="m-1">
+                    {% for S in sizes %}
+
+                    <option value="{{ S }}">{{ S }}</option>
+
+                    {% endfor %}
+                </div>
+                <div class="col-12 mt-5">
+                  <label for="exampleInputPassword4">quantity</label>
+                  <input type="number" name="product_qty" class="form-control" id="exampleInputPassword4" max="10000"
+                    min="0" placeholder="Qty">
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-primary m-3">Submit</button>
+                  <a href="{% url 'admin_product' %}" class="m-3 btn btn-light">Cancel</a>
+
+            </form>
+            <div class="d-flex justify-content-center">
+              {% if messages %}
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <h5 class="text-danger">{{message}}</h5>
+              {% else %}
+              <h5 class="text-success">{{message}}</h5>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock dashboard %}

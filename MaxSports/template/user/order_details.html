@@ -1,0 +1,404 @@
+{% extends 'user/category.html' %}
+{% load static %}
+
+{% block header_name %}
+					<h1>Order Details</h1>
+{% endblock header_name %}
+
+{% block section_data %}
+
+	<!--================Order Details Area =================-->
+<section class="order_details section_gap">
+    <div class="container">
+        <h3 class="title_confirmation">Your order status : <span class="text-danger">{{order_details.status}}</span></h3>
+        <div class="row order_d_inner">
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Order Info</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Order number</span> : {{order_details.order.serial_number}}</a></li>
+                        <li><a href="#"><span>Order Date</span> : {{order_details.order.order_date|date:"DATE_FORMAT"}}</a></li>
+                        <li><a href="#"><span>Sub Total</span> : {{order_details.final_product_price}}</a></li>
+                        <li><a href="#"><span>Payment method</span> : {{order_details.order.payment_method}}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Billing Address</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Street</span> :{{order_details.order.address.area}}</a></li>
+                        <li><a href="#"><span>City</span> : {{order_details.order.address.city}}</a></li>
+                        <li><a href="#"><span>State</span> : {{order_details.order.address.state}}</a></li>
+                        <li><a href="#"><span>Postcode </span> : {{order_details.order.address.pincode}}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Shipping Address</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Street</span> :{{order_details.order.address.area}}</a></li>
+                        <li><a href="#"><span>City</span> : {{order_details.order.address.city}}</a></li>
+                        <li><a href="#"><span>State</span> : {{order_details.order.address.state}}</a></li>
+                        <li><a href="#"><span>Postcode </span> : {{order_details.order.address.pincode}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% if order_details.status == 'Order Pending' %}
+        <div class="d-flex justify-content-between">
+            <h6 class="text-warning">Order Confirmed</h6>
+            <h6 class="text-warning">Shipped</h6>
+            <h6 class="text-warning">Out for delivery</h6>
+            <h6 class="text-warning">Delivered</h6>
+        </div>
+        <div class="progress ml-5 mr-4">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 2%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          {% elif order_details.status == 'Order confirmed' %}
+          <div class="d-flex justify-content-between">
+              <h6 class="text-success">Order Confirmed</h6>
+              <h6 class="text-warning">Shipped</h6>
+              <h6 class="text-warning">Out for delivery</h6>
+              <h6 class="text-warning">Delivered</h6>
+          </div>
+          <div class="progress ml-5 mr-4">
+              <div class="progress-bar bg-success" role="progressbar" style="width: 2%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            {% elif order_details.status == 'Shipped' %}
+            <div class="d-flex justify-content-between">
+                <h6 class="text-success">Order Confirmed</h6>
+                <h6 class="text-success">Shipped</h6>
+                <h6 class="text-warning">Out for delivery</h6>
+                <h6 class="text-warning">Delivered</h6>
+            </div>
+            <div class="progress ml-5 mr-4">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 34%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              {% elif order_details.status == 'Out For Delivery' %}
+              <div class="d-flex justify-content-between">
+                  <h6 class="text-success">Order Confirmed</h6>
+                  <h6 class="text-success">Shipped</h6>
+                  <h6 class="text-success">Out for delivery</h6>
+                  <h6 class="text-warning">Delivered</h6>
+              </div>
+              <div class="progress ml-5 mr-4">
+                  <div class="progress-bar bg-success" role="progressbar" style="width: 66%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            {% elif order_details.status == 'Delivered' %}
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-success">Order Confirmed</h6>
+                    <h6 class="text-success">Shipped</h6>
+                    <h6 class="text-success">Out for delivery</h6>
+                    <h6 class="text-success">Delivered</h6>
+                </div>
+                <div class="progress ml-5 mr-4">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  {% elif order_details.status == 'Cancelled' %}
+                  <div class="d-flex justify-content-between">
+                      <h6 class="text-danger">Order Confirmed</h6>
+                      <h6 class="text-danger">Shipped</h6>
+                      <h6 class="text-danger">Out for delivery</h6>
+                      <h6 class="text-danger">Cancelled</h6>
+                  </div>
+                  <div class="progress ml-5 mr-4">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: 34%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    {% elif order_details.status == 'Returned' %}
+                    <div class="d-flex justify-content-between">
+                        <h6 class="text-danger">Order Confirmed</h6>
+                        <h6 class="text-danger">Shipped</h6>
+                        <h6 class="text-danger">Out for delivery</h6>
+                        <h6 class="text-danger">Returned</h6>
+                    </div>
+                    <div class="progress ml-5 mr-4">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+          {% endif %}
+          
+        <div class="order_details_table">
+            <div class="d-flex justify-content-between">
+            <h2>Order Details  <span class="text-info ml-4">{{order_details.order.serial_number}}</span></h2>
+            {% if order_details.status == 'Cancelled' %}
+            <h5 class="text-danger">{{order_details.status}}</h5>
+            {% elif order_details.cancel_return_confirm %}
+            <h5 class="text-danger">Cancel Requested</h5>
+            {% else %}
+            <a id="basicAlert" class="btn btn-outline-danger" href="{% url 'cancel_order' order_id=order_details.id %}?next={{ request.path }}">Cancel Order</a>
+            {% endif %}
+        </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>{{order_details.product_added}}</p>
+                            </td>
+                            <td>
+                                <h5>x {{order_details.quantity}}</h5>
+                            </td>
+                            <td>
+                                <p>{{order_details.final_product_price}}</p>
+                            </td>
+                        </tr>
+                    <thead>
+                        <tr>
+                            <th scope="col">Thumbnail</th>
+                            <th scope="col">Size</th>
+                            <th scope="col">Ordered on :<br> Delivered By :</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <img style="width:200px; height: 200px;" src="{{order_details.product_added.image_first.url}}" alt="">
+                            </td>
+                            <td>
+                                <h5>{{order_details.size}}</h5>
+                            </td>
+                            <td>
+                                <h5>{{order_details.order.order_date | date:'d-m-Y'}}</h5><span class="ml-4">- - - - -</span><br>
+                                {% if not order_details.status == 'Cancelled' or order_details.status == 'Returned' %}
+                                <h5>{{order_details.expected_delivery_date | date:'d-m-Y'}}</h5>
+                                {% elif order_details.status == 'Out For Delivery' %}
+                                <h5><b>Will be delivered today</b></h5>
+                                {% elif order_details.status == 'Delivered' %}
+                                <h5>{{order_details.last_update | date:'d-m-Y'}}</h5>
+                                {% else %}
+                                <h5 class="text-danger">Cancelled</h5>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tr>
+                        <td>
+                            <h4></h4>
+                        </td>
+                        <td>
+                            <h4>This price is for all products in the cart</h4>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td>
+                                <h4>Shipping</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                {% if order_details.total_amount < 4000 %}
+                                <p>Flat rate:  150.00</p>
+                                {% else %}
+                                <p>Free For You</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <p>Coupon Applied</p>
+                            </td>
+                            <td>
+                                <p>{{order_details.order.coupon_name}}</p>
+                            </td>
+                            <td>
+                                {% if order_details.order.coupon_discount %}
+                                <p>- {{order_details.order.coupon_discount}}</p>
+                                {% else %}
+                                <p>None</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h4>Total</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                <p>{{order_details.order.total_amount}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="order_details_table">
+           
+            {% for order_detail in other_orders.order_all.all %}
+                {% if order_detail != order_details %}
+
+                <div class="d-flex justify-content-between">
+                    <h2>Others Order with this <span class="text-info ml-4">{{order_detail.order.serial_number}}</span></h2>
+
+            {% if order_detail.status == 'Cancelled' %}
+            <h5 class="text-danger">{{order_details.status}}</h5>
+            {% elif order_detail.cancel_return_confirm %}
+            <h5 class="text-danger">Cancel Requested</h5>
+            {% else %}
+            <a id="basicAlert" class="btn btn-outline-danger" href="{% url 'cancel_order' order_id=order_detail.id %}?next={{ request.path }}">Cancel Order</a>
+            {% endif %}
+        </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>{{order_detail.product_added}}</p>
+                            </td>
+                            <td>
+                                <h5>x {{order_detail.quantity}}</h5>
+                            </td>
+                            <td>
+                                <p>{{order_detail.final_product_price}}</p>
+                            </td>
+                        </tr>
+                    <thead>
+                        <tr>
+                            <th scope="col">Thumbnail</th>
+                            <th scope="col">Size</th>
+                            <th scope="col">Ordered on :<br> Delivered By :</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <img style="width:200px; height: 200px;" src="{{order_detail.product_added.image_first.url}}" alt="">
+                            </td>
+                            <td>
+                                <h5>{{order_detail.size}}</h5>
+                            </td>
+                            <td>
+                                <h5>{{order_detail.order.order_date | date:'d-m-Y'}}</h5><span class="ml-4">- - - - -</span><br>
+                                {% if not order_detail.status == 'Cancelled' or order_detail.status == 'Returned' %}
+                                <h5>{{order_detail.expected_delivery_date | date:'d-m-Y'}}</h5>
+                                {% elif order_detail.status == 'Out For Delivery' %}
+                                <h5><b>Will be delivered today</b></h5>
+                                {% elif order_detail.status == 'Delivered' %}
+                                <h5>{{order_detail.last_update | date:'d-m-Y'}}</h5>
+                                {% else %}
+                                <h5 class="text-danger">Cancelled</h5>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tr>
+                        <td>
+                            <h4></h4>
+                        </td>
+                        <td>
+                            <h4>This price is for all products in the cart</h4>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td>
+                                <h4>Shipping</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                {% if order_detail.total_amount < 4000 %}
+                                <p>Flat rate:  150.00</p>
+                                {% else %}
+                                <p>Free For You</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <p>Coupon Applied</p>
+                            </td>
+                            <td>
+                                <p>{{order_detail.order.coupon_name}}</p>
+                            </td>
+                            <td>
+                                {% if order_detail.order.coupon_discount %}
+                                <p>- {{order_detail.order.coupon_discount}}</p>
+                                {% else %}
+                                <p>None</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <h4>Total</h4>
+                            </td>
+                            <td>
+                                <h5></h5>
+                            </td>
+                            <td>
+                                <p>{{order_detail.order.total_amount}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+       
+    </div>
+
+    <div class="d-flex justify-content-center mt-4"><a href="{% url 'user_orders' %}" type="button" class="btn btn-outline-primary">Go back</a></div>
+</section>
+<!--================End Order Details Area =================-->
+
+{% endblock section_data %}
+
+{% block extra_script %}
+<script>
+    document.getElementById('basicAlert').addEventListener('click', function (event) {
+        event.preventDefault();
+    
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+              confirmButton: "btn btn-success",
+              cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+    
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, cancel order!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{% url 'cancel_order' order_id=order_details.id %}?next={{ request.path }}"; 
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "Your order will be delivered soon :)",
+                    icon: "info"
+                });
+            }
+        });
+    });
+</script>
+{% endblock extra_script %}

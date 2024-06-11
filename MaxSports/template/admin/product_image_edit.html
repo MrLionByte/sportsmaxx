@@ -1,0 +1,171 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block js_link_head %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock js_link_head %}
+
+{% block navbar_menu_wrapped %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'error' %}
+<script>
+swal("Error!", "{{ message }}", "error"); // Display error message with a warning icon
+</script>
+{% elif message.tags == 'success' %}
+<script>
+swal("Success!", "{{ message }}", "success"); // Display success message with a success icon
+</script>
+{% else %}
+<script>
+swal("Message", "{{ message }}"); // Display general message
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock navbar_menu_wrapped %}
+
+
+{% block dashboard %}
+<div class="main-panel">
+    <div class="content-wrapper d-flex justify-content-center">
+<div class="row">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card "  style="width: 80%;">
+     
+      <div class="card-body">
+        <h4 class="card-title text-center">EDIT PRODUCT</h4>
+        <p class="card-description text-center"> {{selected_product_color}} </p>
+        <form class="forms-sample" action="{% url 'edit_product_image' product_id %}?next={{request.path}}" method="post" enctype="multipart/form-data">
+
+          {% csrf_token %}
+          <div>
+          <div class="form-group col-12 d-flex justify-content-between ">
+            <p>old img</p>
+            <p>New img</p> 
+                <div class="col-6">  
+                    <label for="exampleInputName1">Color</label>
+                    <input required type="text" value="{{selected_product_color.product_color}}" name="product_color" class="form-control" id="exampleInputName1" placeholder="Product Name">
+                </div>
+                <div class="col-6">
+                      <label for="exampleInputPassword4">Variant Name</label>
+                      <input required type="text" value="{{selected_product_color.product_variant_name}}" name="product_variant_name" class="form-control" id="exampleInputPassword4">
+                </div>
+          </div>
+          <div class=" d-flex justify-content-between col-12">
+              <div class="col-4">
+                <img class="p-3" src="{{selected_product_color.image_first.url}}"  alt="Your Image" width="200" height="200">
+                <!-- <input required type="file" class="upload-btn" name="image_first" accept="image/png, image/jpeg ,image/jpg"> -->
+              </div>
+              <div  class="col-4">
+                <input type="file" class="form-control" name="image_first" id="exampleInputImage1" onchange="previewImage(this, 'imagePreview1')"
+                accept="image/png, image/jpeg ,image/jpg">
+              </div>
+              <div  class="col-4">
+                <img class="p-3"  id="imagePreview1" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px;">
+              </div>
+          </div>
+
+          <div class=" d-flex justify-content-between col-12">
+            <div class="col-4">
+              <img class="p-3"  src="{{ selected_product_color.image_second.url }}"  alt="Your Image" width="200" height="200">
+            </div>
+            <div  class="col-4">
+              <input type="file" class="form-control" name="image_second" id="exampleInputImage2" onchange="previewImage(this, 'imagePreview2')"
+              accept="image/png, image/jpeg ,image/jpg">
+            </div>
+            <div  class="col-4">
+              <img class="p-3"  id="imagePreview2" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+            </div>
+        </div>
+
+        <div class=" d-flex justify-content-between col-12">
+          <div class="col-4" >
+            <img class="p-3"  src="{{selected_product_color.image_third.url}}"  alt="Your Image" width="200" height="200">
+          </div>
+          <div  class="col-4">
+            <input  type="file" class="form-control" name="image_third" id="exampleInputImage3" onchange="previewImage(this, 'imagePreview3')"
+            accept="image/png, image/jpeg ,image/jpg">
+          </div>
+          <div  class="col-4">
+            <img class="p-3"  id="imagePreview3" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+          </div>
+      </div>
+
+      <div class=" d-flex justify-content-between col-12">
+        <div class="col-4" style="padding-bottom: 30%;">
+          <img class="p-3"  src="{{selected_product_color.image_fourth.url}}"  alt="Your Image" width="200" height="200">
+        </div>
+        <div  class="col-4">
+          <input  type="file" class="form-control" name="image_fourth" id="exampleInputImage5" onchange="previewImage(this, 'imagePreview4')"
+          accept="image/png, image/jpeg ,image/jpg">
+        </div>
+        <div  class="col-4">
+          <img class="p-3"  id="imagePreview4" src="#" alt="Uploaded Image" style="display:none; max-width: 200px; max-height: 200px; border-radius: 7px; ">
+        </div>
+    </div>
+
+            <button type="submit" class="btn btn-primary m-4">Submit</button>
+            <a href="{% url 'admin_product' %}"><button class="m-4 btn btn-light">Cancel</button></a>
+        </form>
+     
+        
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock dashboard %}
+
+{% block js_scripts %}
+   
+<script>
+  function moveToNext(event, nextInputId) {
+      if (event.keyCode === 13) { 
+          event.preventDefault(); 
+          var nextInput = document.getElementById(nextInputId);
+          if (nextInput) {
+              nextInput.focus(); 
+          }
+      }
+  }
+
+  function previewImage(input, previewId) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+          var imgElement = document.getElementById(previewId);
+          imgElement.src = e.target.result;
+          imgElement.style.display = 'block';
+      };
+
+      reader.readAsDataURL(input.files[0]);
+  }
+</script>
+
+{% endblock js_scripts %}

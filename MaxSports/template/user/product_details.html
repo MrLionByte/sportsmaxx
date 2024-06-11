@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports-Maxx</title>
+
+  <!-- Bootstrap Links -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
+  crossorigin="anonymous">
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'img/sport_max_fav.png' %}">
+
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="{% static 'css\admin_product_details.css' %}">
+  <!-- End layout styles -->
+
+  </head>
+
+<body>
+
+<section>
+  <div class = "card-wrapper" style="margin-top:5% ;">
+    <div class = "card">
+      {% for data in product_data %}
+      
+      <div class = "product-imgs">
+        <div class = "img-display">
+          <div class = "img-showcase">
+            <img src = "{{ data.image_first.url }}" alt = "Loading">
+            <img src = "{{ data.image_second.url }}" alt = "Loading">
+            <img src = "{{ data.image_third.url }}" alt = "Loading">
+            <img src = "{{ data.image_fourth.url }}" alt = "Loading">
+          </div>
+        </div>
+        <div class = "img-select">
+          <div class = "img-item">
+            <a href = "#" data-id = "1">
+              <img src = "{{ data.image_first.url }}" alt = "loading">
+            </a>
+          </div>
+          <div class = "img-item">
+            <a href = "#" data-id = "2">
+              <img src = "{{ data.image_second.url }}" alt = "loading">
+            </a>
+          </div>
+          <div class = "img-item">
+            <a href = "#" data-id = "3">
+              <img src = "{{ data.image_third.url }}" alt = "loading">
+            </a>
+          </div>
+          <div class = "img-item">
+            <a href = "#" data-id = "4">
+              <img src = "{{ data.image_fourth.url }}" alt = "loading">
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- card right -->
+      <div class = "product-content">
+        <h2 class = "product-title"> {{data.product_id.product_name}} </h2>
+        <a href = "{% url 'all_products_list' %}" class = "product-link">GO BACK</a>
+        <a href = "{% url 'cart_show' %}" class="product-link" style="margin-left: 20%; background-color: rgb(174, 6, 6);">GO TO CART</a>
+        <div class = "product-rating">
+          <i class = "fas fa-star"></i>
+          <i class = "fas fa-star"></i>
+          <i class = "fas fa-star"></i>
+          <i class = "fas fa-star"></i>
+          <i class = "fas fa-star-half-alt"></i>
+          <!-- <span>4.7(21)</span> -->
+        </div>
+  
+        <div class = "product-price">
+          <p class = "new-price">Price : <span><del>₹ {{data.product_id.product_price}}</del></span></p>
+          <p class = "new-price">Now : <span>₹ {{data.product_id.product_price_after}}</span></p>
+        </div>
+  
+        <div class = "product-detail">
+          <h2>about this item: </h2>
+          <p> {{data.product_id.product_description}} </p>
+          <ul>
+            <li>Color: <span>{{data.product_color}}</span></li>
+            {% for size in data.product_size_qty.all %}
+            <li>Size: <span> {{size.product_size}}</span></li>
+            {% endfor %}
+            <li>Category: <span>{{data.product_id.category_id}}</span></li>
+          </ul>
+        </div>
+        
+
+        <div class = "purchase-info">
+          <a href=""><button type = "button" class = "btn btnnn"> Add to Wishlist</button></a>
+          
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <h3 style="color: green;">***  {{message}}  ***</h3>
+        {% elif message.tags == 'error' %}
+        <h3 style="color: red;">!!! {{message}} !!!</h3>
+        {% else %}
+        <h3 style="color: orange;"># {{message}} #</h3>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        
+          <form action="{% url 'add_product_to_cart' %}" method="post">
+            {% csrf_token %}
+            <div class = "purchase-info">
+          <button type = "submit" class = "btn btnnn"> Add to Cart</button></a>
+            </div>    
+
+        <div class = "social-links ">
+          <p>Available Types: </p>
+          <input type="hidden" name="product_id" value="{{data.pk}}">
+          {% if data.product_size_qty.all %}
+          {% for size in data.product_size_qty.all %}
+   
+          <label for="{{size.product_size}}" style="margin-left: -15px;"> {{size.product_size}}</label>
+          <input  type="radio" id="{{size.product_size}}" required name="product_size" value="{{size.product_size}}" />
+         
+          {% endfor %}
+          {% else %}
+          <h5 style="color: darkred;">OUT OF STOCK</p>
+          {% endif %}
+
+        </div>
+      </form>
+      </div>
+      {% endfor product_data %}
+      
+    </div>
+  </div>
+
+</section>
+
+  <script>
+    const imgs = document.querySelectorAll('.img-select a');
+const imgBtns = [...imgs];
+let imgId = 1;
+
+imgBtns.forEach((imgItem) => {
+    imgItem.addEventListener('click', (event) => {
+        event.preventDefault();
+        imgId = imgItem.dataset.id;
+        slideImage();
+    });
+});
+
+function slideImage(){
+    const displayWidth = document.querySelector('.img-showcase img:first-child').clientWidth;
+
+    document.querySelector('.img-showcase').style.transform = `translateX(${- (imgId - 1) * displayWidth}px)`;
+}
+
+window.addEventListener('resize', slideImage);
+  </script>
+</body>
+</html>
