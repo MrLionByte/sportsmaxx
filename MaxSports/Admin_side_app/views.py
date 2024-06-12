@@ -176,7 +176,7 @@ def admin_dashboard(request):
     )
 
     page_check = request.session.get("page_check")
-    print(page_check)
+
     context = {
         "page_check": page_check,
         "sales_report": sales_report,
@@ -206,7 +206,6 @@ def admin_dashboard(request):
 
 def admin_dashboard_page(request):
     page_next = request.GET.get("page_next")
-    print(page_next)
     request.session["page_check"] = page_next
     return redirect("admin_dashboard")
 

@@ -12,32 +12,25 @@ def initiate_payment(request):
     amount = float(request.POST["amount"])
     payment_mode = 'razorpay'
     order_id = request.POST.get("order_id")
-    print("Working 1")
     request.session["selected_address"] = selected_address
     request.session["amount"] = amount
     request.session["payment_mode"] = payment_mode
     if order_id:
         request.session["order_id"] = order_id
-    print("Working 2")
     if payment_mode == "razorpay":
-        # Initiate Razorpay payment
-        print("Working 3")
         payment_data = {
-            "amount": int(amount * 100),  # Amount in paise
+            "amount": int(amount * 100),  
             "currency": "INR",
             "receipt": "order_receipt",
             "notes": {
                 "email": request.user.email,
             },
         }
-        print("Working 4")
         try:
-            print("Working 5")
             client = razorpay.Client(
                 auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET)
             )
             order = client.order.create(data=payment_data)
-            print("Working 6")
             payment_info = {
                 "amount": order["amount"],
                 "currency": order["currency"],
@@ -47,20 +40,14 @@ def initiate_payment(request):
                 "image": "{% static 'img/sport_max_fav.png' %}",
                 "order_id": order["id"],
             }
-            print("Working 7")
-            print('PAYMENT', payment_info)
-            if amount == 0.00:
-                views.add_to_order(request)
             return JsonResponse(payment_info)
 
         except razorpay.errors.RazorpayError as e:
-            print("Working 8")
             return JsonResponse({"error": str(e)}, status=500)
 
 
 def payment_failure(request):
     user = request.user
-    print("Working 1")
     request.session["amount"] = 0.00
     request.session["payment_mode"] = 'None'
 

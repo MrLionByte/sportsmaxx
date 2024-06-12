@@ -422,7 +422,6 @@ def order_details(request, order_id):
         STATUS_CHOICES = None
     elif order_details.status == "Order confirmed":
         STATUS_CHOICES = ("Order confirmed", "Shipped", "Cancelled")
-        print(STATUS_CHOICES)
     elif order_details.status == "Shipped":
         STATUS_CHOICES = ("Shipped", "Out For Delivery", "Cancelled")
     elif order_details.status == "Out For Delivery":
@@ -626,7 +625,6 @@ def add_to_order(request):
         amount = float(request.POST.get("amount"))
         payment_mode = request.POST.get("payment_mode")
     else:
-        print('working')
         selected_address = request.session["selected_address"]
         amount = float(request.session["amount"])
         payment_mode = request.session["payment_mode"]
@@ -689,8 +687,7 @@ def add_to_order(request):
         request.session["order_sl_no"] = str(order_data.serial_number)
 
         count = 0
-        print(type(amount))
-        print(amount, 'amounttt')
+
         for data in users_cart_varients_products:
             order_item = Order_items(
                 order=order_data,
@@ -701,11 +698,11 @@ def add_to_order(request):
                 status="Order Pending",
             )
             if amount == 0.00:
-                print(amount)
+                (amount)
                 order_item.accept_order=False
                 order_item.status = "Payment Pending"
             order_item.save()
-            print(order_item.status)
+            (order_item.status)
             count += 1
        
         if count > 0:
@@ -814,7 +811,7 @@ def cancel_order(request, order_id):
 
     next_url = request.GET.get("next")
     reason = request.GET.get('reason')
-    print(reason)
+    ''(reason)
 
     try:
         order_item = Order_items.objects.get(id=order_id)
@@ -865,7 +862,7 @@ def download_invoice(request, serial_number):
     context = {"order_details": order_details, "order_details_all": order_details_all}
     template = loader.get_template("user/invoice.html")
     html = template.render(context, request)
-    pdf = weasyprint.HTML(string=html).write_pdf()
+    pdf = weasy''.HTML(string=html).write_pdf()
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
     response.write(pdf)

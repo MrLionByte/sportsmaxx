@@ -139,7 +139,6 @@ def email_otp_generator(email, request=None):
     if request:
         request.session["expires_timer_otp"] = expires_timer_otp.isoformat()
         request.session["otp"] = otp
-    print("     otp    here   ====       ", otp)
 
 
 # ========= END OTP GENERATOR  =========== #
@@ -364,7 +363,7 @@ def forgot_password(request):
     context = {
         "user_data": True,
     }
-    print(otp, "=====================")
+
     if request.method == "POST":
         password = request.POST.get("password_new")
         confirm_password = request.POST.get("password_conf")

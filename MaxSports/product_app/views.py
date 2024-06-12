@@ -585,12 +585,12 @@ def admin_add_size_qty(request):
                         size_variant.full_clean()
                         size_variant.save()
                         messages.success(request, f"Variant added for {product_color}")
+                        return redirect(
+                            "admin_add_size_qty",
+                            {"product_sizes_display": product_sizes_display},
+                        )
                     except ValidationError as e:
                         messages.error(request, "Error ,Check the variant")
-                        errors = e.message_dict
-
-                        for field, error_messages in errors.items():
-                            print(f"{field}: {', '.join(error_messages)}")
                         product_sizes_display
                         return redirect(
                             "admin_add_size_qty",
