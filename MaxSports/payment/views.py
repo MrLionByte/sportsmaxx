@@ -2,6 +2,7 @@ import razorpay
 from django.conf import settings
 from django.http import JsonResponse
 from order_app import views
+from django.shortcuts import render, redirect
 
 
 def initiate_payment(request):
@@ -9,11 +10,14 @@ def initiate_payment(request):
 
     selected_address = request.POST.get("selected_address")
     amount = float(request.POST["amount"])
-    payment_mode = request.POST["payment_mode"]
+    payment_mode = 'razorpay'
+    order_id = request.POST.get("order_id")
     print("Working 1")
     request.session["selected_address"] = selected_address
     request.session["amount"] = amount
     request.session["payment_mode"] = payment_mode
+    if order_id:
+        request.session["order_id"] = order_id
     print("Working 2")
     if payment_mode == "razorpay":
         # Initiate Razorpay payment
@@ -54,6 +58,17 @@ def initiate_payment(request):
             return JsonResponse({"error": str(e)}, status=500)
 
 
+def payment_failure(request):
+    user = request.user
+    print("Working 1")
+    request.session["amount"] = 0.00
+    request.session["payment_mode"] = 'None'
+
+    payment_info = None
+            
+    return redirect('add_to_order')
+
+
 def initiate_payment_for_wallet(request):
     if request.method == "POST":
         amount = float(request.POST.get("amount", 0))
@@ -87,3 +102,5 @@ def initiate_payment_for_wallet(request):
         except razorpay.errors.RazorpayError as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+

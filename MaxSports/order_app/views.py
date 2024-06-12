@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Order, user_address, Order_items
@@ -375,12 +376,12 @@ Render oder_delivered page and show all order data of Customers by from Admin.
 def admin_pending_actions(request):
     storage = messages.get_messages(request)
     storage.used = True
-
-    orders = Order_items.objects.filter(accept_order=True, cancel_return_confirm=True)
+    
+    orders = Order_items.objects.all().order_by("-last_update")
     context = {
         "orders": orders,
     }
-    return render(request, "admin/admin_order_delivered.html", context)
+    return render(request, "admin/admin_order_pending.html", context)
 
 
 """
@@ -452,7 +453,7 @@ def order_confirmation(request, order_id):
     try:
         order = Order_items.objects.get(id=order_id)
         order_status = order.STATUS_CHOICES
-        order.accept_order = True
+        order.accept_order = False
         order.status = order_status[1][1]
         order.save()
         product_qty = product_sizes_variants.objects.get(
@@ -484,11 +485,13 @@ def order_cancel_approval(request, order_id):
         order = Order_items.objects.get(id=order_id)
         if order.status != "Delivered":
             order_status = order.STATUS_CHOICES
+            order.cancel_return_confirm = False
             order.status = order_status[5][1]
             order.save()
         else:
             order_status = order.STATUS_CHOICES
             order.status = order_status[6][1]
+            order.cancel_return_confirm = False
             order.save()
 
         if order.order.payment_method != "cod":
@@ -613,6 +616,7 @@ def add_to_order(request):
         amount = float(request.POST.get("amount"))
         payment_mode = request.POST.get("payment_mode")
     else:
+        print('working')
         selected_address = request.session["selected_address"]
         amount = float(request.session["amount"])
         payment_mode = request.session["payment_mode"]
@@ -644,16 +648,16 @@ def add_to_order(request):
             user_id=user_in_action,
             address=address,
             payment_method=payment_mode,
-            total_amount=amount,
+            total_amount=amount
         )
-
         if users_cart.coupon_active:
             order_data.coupon_name = users_cart.coupon.title
             if users_cart.coupon.discount_amount is not None:
                 order_data.coupon_discount = "₹ " + str(users_cart.coupon.discount_amount)
             else:
                 order_data.coupon_discount = "% " + str(users_cart.coupon.discount_percentage)
-
+        if amount == 0.00:
+            order_data.amount_to_pay = users_cart.total_amount
         try:
             order_data.full_clean()
             order_data.save()
@@ -675,6 +679,8 @@ def add_to_order(request):
         request.session["order_sl_no"] = str(order_data.serial_number)
 
         count = 0
+        print(type(amount))
+        print(amount, 'amounttt')
         for data in users_cart_varients_products:
             order_item = Order_items(
                 order=order_data,
@@ -682,11 +688,16 @@ def add_to_order(request):
                 quantity=data.quantity,
                 size=data.product_color_variant.product_size,
                 final_product_price=data.sub_total,
-                status="Order Pending" if amount != 0.00 else "Payment Pending",
+                status="Order Pending",
             )
+            if amount == 0.00:
+                print(amount)
+                order_item.accept_order=False
+                order_item.status = "Payment Pending"
             order_item.save()
+            print(order_item.status)
             count += 1
-
+       
         if count > 0:
             users_cart.delete()
             return redirect("order_confirm")
@@ -708,6 +719,31 @@ def add_to_order(request):
     return JsonResponse({"message": "Order could not be processed."})
 
 #  <  ===========   End Add order ===========   > #
+
+
+#  <  ===========   Reorder order ===========   > #
+
+def re_order_payment(request):
+    user = request.user
+    
+    amount = Decimal(request.POST.get('amount'))
+    order_id = request.POST.get('order_id')
+
+    re_order = Order.objects.get(user_id=user,serial_number=order_id)
+    re_order.amount_to_pay = 0.00
+    re_order.total_amount = amount
+    re_order.payment_method = 'razorpay'
+    re_order.save()
+
+    order_item = Order_items.objects.filter(order=re_order)
+    for item in order_item:
+        item.status = 'Order Pending'
+        item.accept_order=True
+        item.save()
+
+    return redirect('user_orders')
+
+#  <  ===========   End Reorder order ===========   > #
 
 
 #  <  ===========   All User orders  ===========   > #

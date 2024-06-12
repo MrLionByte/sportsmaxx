@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block header_name %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 					<h1>Order Details</h1>
 {% endblock header_name %}
 
@@ -117,7 +120,11 @@
                         <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
           {% endif %}
+<form id="payment-form" method="post" action="{% url 'initiate_payment' %}">
+            {% csrf_token %}
           
+            <input type="text" hidden name="order_id" value="{{ order_details.order.serial_number }}">
+
         <div class="order_details_table">
             <div class="d-flex justify-content-between">
             <h2>Order Details  <span class="text-info ml-4">{{order_details.order.serial_number}}</span></h2>
@@ -125,6 +132,8 @@
             <h5 class="text-danger">{{order_details.status}}</h5>
             {% elif order_details.cancel_return_confirm %}
             <h5 class="text-danger">Cancel Requested</h5>
+            {% elif order_details.status == 'Payment Pending' %}
+            <button type="button" id="pay-button" class="btn btn-outline-info">PAY</button>
             {% else %}
             <a id="basicAlert" class="btn btn-outline-danger" href="{% url 'cancel_order' order_id=order_details.id %}?next={{ request.path }}">Cancel Order</a>
             {% endif %}
@@ -195,7 +204,7 @@
                                 <h5></h5>
                             </td>
                             <td>
-                                {% if order_details.total_amount < 4000 %}
+                                {% if order_details.order.total_amount < 4000 or order_details.order.amount_to_pay < 4000 %}
                                 <p>Flat rate:  150.00</p>
                                 {% else %}
                                 <p>Free For You</p>
@@ -227,13 +236,26 @@
                                 <h5></h5>
                             </td>
                             <td>
+                                
+                                {% if order_details.order.total_amount == 0.00 %}
+                                <input type="text" hidden name="amount" value="{{ order_details.order.amount_to_pay }}">
+
+                                <p class="text-danger">Not Payed</p>
+                                <p>Amount to pay : {{order_details.order.amount_to_pay}}</p>
+                                {% else %}
                                 <p>{{order_details.order.total_amount}}</p>
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+    <input type="hidden" name="payment_mode" value="razorpay">
+    <input type="hidden" name="selected_address" value="{{ order_details.order.address }}">
+
+</form>
 
         <div class="order_details_table">
            
@@ -317,7 +339,7 @@
                                 <h5></h5>
                             </td>
                             <td>
-                                {% if order_detail.total_amount < 4000 %}
+                                {% if order_detail.total_amount < 4000 or order_detail.amount_to_pay < 4000 %}
                                 <p>Flat rate:  150.00</p>
                                 {% else %}
                                 <p>Free For You</p>
@@ -349,7 +371,12 @@
                                 <h5></h5>
                             </td>
                             <td>
-                                <p>{{order_detail.order.total_amount}}</p>
+                                {% if order_detail.total_amount == 0.00 %}
+                                <p class="text-danger">Not Payed</p>
+                                <p>Amount to pay : {{order_detail.amount_to_pay}}</p>
+                                {% else %}
+                                <p>{{order_detail.total_amount}}</p>
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
@@ -368,7 +395,105 @@
 {% endblock section_data %}
 
 {% block extra_script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    $(document).ready(function() {
+        $("#pay-button").click(function(e) {
+            e.preventDefault();
+    
+            const csrfToken = $("[name=csrfmiddlewaretoken]").val();
+            const orderId = $("input[name='order_id']").val();
+            const amount = $("input[name='amount']").val();
+            const paymentMode = $("input[name='payment_mode']").val();
+            const selectedAddress = $("input[name='selected_address']").val();
+    
+            const data = {
+                order_id: orderId,
+                amount: amount,
+                payment_mode: paymentMode,
+                selected_address: selectedAddress
+            };
+    
+            $.ajax({
+                type: "POST",
+                url: "{% url 'initiate_payment' %}",
+                data: data,
+                dataType: "json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+                },
+                success: function(data) {
+                    const options = {
+                        key: data.key,
+                        amount: data.amount,
+                        currency: data.currency,
+                        order_id: data.order_id,
+                        name: data.name,
+                        description: data.description,
+                        image: data.image,
+                        handler: function(response) {
+                            if (response.razorpay_payment_id) {
+                                Swal.fire({
+                                    text: 'Payment was successful, Order placed Successfully...',
+                                    icon: 'success',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{% url 're_order_payment' %}",
+                                        data: {
+                                            order_id: orderId,
+                                            amount: amount
+                                        },
+                                        beforeSend: function(xhr) {
+                                            xhr.setRequestHeader("X-CSRFToken", csrfToken);
+                                        },
+                                        success: function(response) {
+                                            window.location.href = "{% url 'user_orders' %}";
+                                        },
+                                        error: function(error) {
+                                            Swal.fire({
+                                                title: 'Error!',
+                                                text: 'There was an issue updating the order. Please try again.',
+                                                icon: 'error',
+                                                showConfirmButton: true
+                                            });
+                                        }
+                                    });
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Payment failed. Please try again.',
+                                    icon: 'error',
+                                    showConfirmButton: true
+                                });
+                            }
+                        },
+                        prefill: {
+                            name: "{{ user.get_full_name }}",  // Dynamically set this value
+                            email: "{{ user.email }}",  // Dynamically set this value
+                            contact: "{{ user.profile.contact }}"  // Dynamically set this value
+                        },
+                    };
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                },
+                error: function(error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an issue initiating the payment. Please try again.',
+                        icon: 'error',
+                        showConfirmButton: true
+                    });
+                }
+            });
+        });
+    });
+    
+    
     document.getElementById('basicAlert').addEventListener('click', function (event) {
         event.preventDefault();
     

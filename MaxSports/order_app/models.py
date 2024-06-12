@@ -24,6 +24,7 @@ class Order(models.Model):
     coupon_name = models.CharField(max_length=50, null=True, blank=True)
     coupon_discount = models.CharField(max_length=50, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    amount_to_pay = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -64,7 +65,7 @@ class Order_items(models.Model):
     )
     status = models.CharField(choices=STATUS_CHOICES, default="Order Pending")
     cancel_return_confirm = models.BooleanField(default=False)
-    accept_order = models.BooleanField(default=False)
+    accept_order = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return f"{self.order} ,PK{self.pk}"

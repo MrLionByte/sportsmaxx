@@ -64,7 +64,11 @@ swal("Message", "{{ message }}"); // Display general message
                             </td>
 
                             <td>
+                                {% if obj.order.amount_to_pay and obj.order.total_amount == 0.00 %}
+                                <h5>Not paid</h5>
+                                {% else %}
                                 <h5>{{ obj.order.payment_method }}</h5>
+                                {% endif %}
                             </td>
 
                             <td >
@@ -91,6 +95,10 @@ swal("Message", "{{ message }}"); // Display general message
                                 </a>
                                 <br>
                                 <br>
+                                {% if obj.order.amount_to_pay and obj.order.total_amount  == 0.00 %}
+                                    <h5 class="text-info" >NOT PAID</a>
+                                {% else %}
+
                                 {% if obj.status == 'Returned' or obj.status == 'Cancelled' %}
                                 <h5 class="text-danger"> Cancelled </h5>
                                 {% elif obj.status == 'Delivered' and not obj.cancel_return_confirm  %}
@@ -103,6 +111,8 @@ swal("Message", "{{ message }}"); // Display general message
                                     {% else %}
                                 <a class="btn btn-outline-danger cancel-link" cancel_order="{% url 'cancel_order' order_id=obj.id %}?next={{ request.path }}">Cancel</a>
                                     {% endif %}
+                                    
+                                {% endif %}
 
                                 {% endif %}
                             </div>
@@ -209,6 +219,139 @@ swal("Message", "{{ message }}"); // Display general message
                 if (result.isConfirmed) {
                     // If user confirms deletion, navigate to the delete URL
                     window.location.href = returnUrl;
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        const csrfToken = $("[name=csrfmiddlewaretoken]").val();
+    
+        $("#pay-button").click(function(e) {
+            e.preventDefault(); // Prevent the default form submission
+    
+            const amount = $("#amount").val(); // Get the amount from the input field
+            const paymentId = "generated_payment_id"; // Replace with the actual payment ID logic
+    
+            console.log("Amount entered:", amount);
+            console.log("Generated payment ID:", paymentId);
+    
+            if (!amount || isNaN(amount) || amount <= 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter a valid amount.',
+                    icon: 'error',
+                    showConfirmButton: true
+                });
+                return;
+            }
+    
+            const data = {
+                amount: amount,
+                payment_id: paymentId,
+            };
+    
+            console.log("Data to be sent to initiate payment:", data);
+    
+            $.ajax({
+                type: "POST",
+                url: "/initiate_payment_for_wallet/",  // Update with your correct URL
+                data: data,
+                dataType: "json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+                    console.log("CSRF Token:", csrfToken);
+                },
+                success: function(data) {
+                    console.log("Response from initiate_payment:", data);
+    
+                    const options = {
+                        key: data.key,
+                        amount: data.amount,
+                        currency: data.currency,
+                        order_id: data.order_id,
+                        name: data.name,
+                        description: data.description,
+                        image: data.image,
+                        handler: function(response) {
+                            console.log("Razorpay payment response:", response);
+                            if (response.razorpay_payment_id) {
+                                Swal.fire({
+                                    text: 'Payment was successful, just wait',
+                                    timer: 500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/user/wallet/update_wallet_balance/",
+                                        data: {
+                                            amount: amount,
+                                            payment_id: response.razorpay_payment_id
+                                        },
+                                        dataType: "json",
+                                        beforeSend: function(xhr) {
+                                            xhr.setRequestHeader("X-CSRFToken", csrfToken);
+                                            console.log("CSRF Token for updating wallet balance:", csrfToken);
+                                        },
+                                        success: function(data) {
+                                            console.log("Response from update_wallet_balance:", data);
+                                            if (data.status === 'success') {
+                                                Swal.fire({
+                                                    title: 'Success!',
+                                                    text: 'Wallet balance updated successfully.',
+                                                    icon: 'success',
+                                                    showConfirmButton: true
+                                                }).then(() => {
+                                                    console.log("Reloading page after successful wallet update.");
+                                                    window.location.reload();
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    title: 'Error!',
+                                                    text: 'Failed to update wallet balance. Please try again.',
+                                                    icon: 'error',
+                                                    showConfirmButton: true
+                                                });
+                                            }
+                                        },
+                                        error: function(error) {
+                                            console.error("Error updating wallet balance:", error);
+                                            Swal.fire({
+                                                title: 'Error!',
+                                                text: 'There was an issue updating the wallet balance. Please try again.',
+                                                icon: 'error',
+                                                showConfirmButton: true
+                                            });
+                                        }
+                                    });
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Payment failed. Please try again.',
+                                    icon: 'error',
+                                    showConfirmButton: true
+                                });
+                            }
+                        },
+                        prefill: {
+                            name: "Customer Name",  // You can dynamically set these values
+                            email: "customer@example.com",  // You can dynamically set these values
+                            contact: "customer_contact",  // You can dynamically set these values
+                        },
+                    };
+                    console.log("Razorpay options:", options);
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                },
+                error: function(error) {
+                    console.error("Error initiating payment:", error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an issue initiating the payment. Please try again.',
+                        icon: 'error',
+                        showConfirmButton: true
+                    });
                 }
             });
         });

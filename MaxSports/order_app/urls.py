@@ -47,4 +47,5 @@ urlpatterns = [
         views.download_invoice,
         name="download_invoice",
     ),
+    path('re_order_payment/',views.re_order_payment, name='re_order_payment'),
 ]

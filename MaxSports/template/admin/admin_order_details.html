@@ -117,7 +117,7 @@ swal("Message", "{{ message }}"); // Display general message
                 </td>
                   <td class="d-flex justify-content-center">
               
-                    {% if not order_details.accept_order and not order_details.cancel_return_confirm and order_details.status != 'Returned' and order_details.status != 'Cancelled' %}
+                    {% if not order_details.accept_order and not order_details.cancel_return_confirm and order_details.status != 'Returned' and order_details.status != 'Cancelled' and order_details.status != 'Payment Pending' %}
                     <a href="{% url 'order_confirmation' order_details.id %}?next={{ request.path }}">
                         <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Approve <br>Order</button>
                     </a>

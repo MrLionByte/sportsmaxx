@@ -52,7 +52,34 @@
   </style>
   {% endblock js_link_head %}
 
+  
 {% block navbar_menu_wrapped %}
+
+{% block pagination %}
+            <li class="nav-item nav-language dropdown d-none d-md-block">
+              <nav aria-label="...">
+                {% if page_check != 'Next' %}
+                <ul class="pagination">
+                  <li class="page-item active" aria-current="page">
+                    <a class="page-link" >Previous</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="{% url 'admin_dashboard_page' %}?page_next=Next">Next</a>
+                  </li>
+                </ul>
+                {% else %}
+                <ul class="pagination">
+                  <li class="page-item" aria-current="page">
+                    <a class="page-link" href="{% url 'admin_dashboard_page' %}?page_next=None">Previous</a>
+                  </li>
+                  <li class="page-item active">
+                    <a class="page-link" aria-current="page">Next</a>
+                  </li>
+                </ul>
+                {% endif %}
+              </nav>
+            </li>
+              {% endblock pagination %}
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
@@ -102,6 +129,8 @@ swal("Message", "{{ message }}"); // Display general message
           <tbody>
             <tr>
               {% for order in orders %}
+                {% if order.accept_order or order.cancel_return_confirm %}
+
               <td><a href="{% url 'order_details' order.id %}">{{order.order.serial_number}}</a></td>
               <td> {{order.order.user_id}} </td>
               <td> {{order.product_added}} </td>
@@ -130,6 +159,8 @@ swal("Message", "{{ message }}"); // Display general message
                 <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true"></button></a> -->
              </td>
             </tr>
+
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>
