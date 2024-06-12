@@ -268,7 +268,8 @@
                 <div class="order_details_table">
 
                 <div class="d-flex justify-content-between">
-                    <h2>Others Order with this <span class="text-info ml-4">{{order_detail.order.serial_number}}</span></h2>
+                    <h2>Others Order with this <a href="{% url 'user_order_details' order_id=order_detail.id %}">
+                        <span class="text-info ml-4">{{order_detail.order.serial_number}}</span></a></h2>
                     <h2 class="text-danger">{{order_detail.status}}</h2>
             <!-- {% if order_detail.status == 'Cancelled' %}
             <h5 class="text-danger">{{order_details.status}}</h5>
