@@ -102,14 +102,14 @@ swal("Message", "{{ message }}"); // Display general message
                                 {% if obj.status == 'Returned' or obj.status == 'Cancelled' %}
                                 <h5 class="text-danger"> Cancelled </h5>
                                 {% elif obj.status == 'Delivered' and not obj.cancel_return_confirm  %}
-                                <a href="#" return_order="{% url 'cancel_order' order_id=obj.id %}?next={{ request.path }}" class="btn btn-outline-danger return-link">Return</a>
+                                <a data-return-url="{% url 'cancel_order' order_id=obj.pk %}?next={{ request.path }}" class="btn btn-outline-danger return-link">Return</a>
                                 {% else %}
                                     {% if obj.cancel_return_confirm and obj.status == 'Delivered' %}
                                     <h5 class="text-danger">Return <br>Requested</h5>
                                     {% elif obj.cancel_return_confirm and obj.status != 'Delivered' %}
                                     <h5 class="text-info">Cancel <br>Requested</h5>
                                     {% else %}
-                                <a class="btn btn-outline-danger cancel-link" cancel_order="{% url 'cancel_order' order_id=obj.id %}?next={{ request.path }}">Cancel</a>
+                                    <a data-cancel-url="{% url 'cancel_order' order_id=obj.pk %}?next={{ request.path }}" class="btn btn-outline-danger cancel-link">Cancel</a>
                                     {% endif %}
                                     
                                 {% endif %}
@@ -180,49 +180,87 @@ swal("Message", "{{ message }}"); // Display general message
     document.querySelectorAll('.cancel-link').forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault(); // Prevent the default behavior of the link
-            
-            let cancelUrl = this.getAttribute('cancel_order'); // Get the delete URL from data attribute
-            
-            // Show SweetAlert2 dialog
+    
+            let cancelUrl = this.getAttribute('data-cancel-url'); // Get the cancel URL from data attribute
+    
+            // Show SweetAlert2 dialog with a reason select box
             Swal.fire({
                 title: "Are you sure?",
-                text: "Once Cancelled order, you can't undo the action!",
+                html: `
+                    <p>Once cancelled, you can't undo the action!</p>
+                    <select id="cancel-reason" class="swal2-select">
+                        <option value="" selected disabled>Select a reason for cancellation</option>
+                        <option value="found_a_better_price">Found a better price</option>
+                        <option value="item_not_needed">Item not needed anymore</option>
+                        <option value="order_by_mistake">Ordered by mistake</option>
+                        <option value="other">Other</option>
+                    </select>
+                `,
                 icon: "warning",
-                showCancelButton: false,
+                showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Yes, Cancel it!",
+                preConfirm: () => {
+                    const reason = Swal.getPopup().querySelector('#cancel-reason').value;
+                    if (!reason) {
+                        Swal.showValidationMessage('Please select a reason for cancellation');
+                    }
+                    return reason;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // If user confirms deletion, navigate to the delete URL
-                    window.location.href = cancelUrl;
+                    // If user confirms cancellation, navigate to the cancel URL with the reason as a query parameter
+                    const cancelUrlWithReason = new URL(cancelUrl, window.location.origin);
+                    cancelUrlWithReason.searchParams.append('reason', result.value);
+                    window.location.href = cancelUrlWithReason;
                 }
             });
         });
-    });
+    });    
+    
     document.querySelectorAll('.return-link').forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault(); // Prevent the default behavior of the link
-            
-            let returnUrl = this.getAttribute('return_order'); // Get the delete URL from data attribute
-            
-            // Show SweetAlert2 dialog
+    
+            let cancelUrl = this.getAttribute('data-return-url'); // Get the cancel URL from data attribute
+    
+            // Show SweetAlert2 dialog with a reason select box
             Swal.fire({
                 title: "Are you sure?",
-                text: "Once Returned order, you can't undo the action!",
+                html: `
+                    <p>Once returned, you can't undo the action!</p>
+                    <select id="cancel-reason" class="swal2-select">
+                        <option value="" selected disabled>Select a reason for Return</option>
+                        <option value="Product has defect or damage">Product has defect or damage</option>
+                        <option value="Received a different product">Received a different product</option>
+                        <option value="Received product does not match the description or images provided">Product not match the description</option>
+                        <option value="Ordered by mistake">Ordered by mistake</option>
+                        <option value="other">Other</option>
+                    </select>
+                `,
                 icon: "warning",
-                showCancelButton: false,
+                showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Return it!",
+                confirmButtonText: "Yes, Return Product!",
+                preConfirm: () => {
+                    const reason = Swal.getPopup().querySelector('#cancel-reason').value;
+                    if (!reason) {
+                        Swal.showValidationMessage('Please select a reason for Returning');
+                    }
+                    return reason;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // If user confirms deletion, navigate to the delete URL
-                    window.location.href = returnUrl;
+                    // If user confirms cancellation, navigate to the cancel URL with the reason as a query parameter
+                    const cancelUrlWithReason = new URL(cancelUrl, window.location.origin);
+                    cancelUrlWithReason.searchParams.append('reason', result.value);
+                    window.location.href = cancelUrlWithReason;
                 }
             });
         });
-    });
+    });    
 
     $(document).ready(function() {
         const csrfToken = $("[name=csrfmiddlewaretoken]").val();

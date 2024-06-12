@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Order, user_address, Order_items
+from .models import Order, user_address, Order_items, Cancelled_order
 from cart_app.models import Cart, Checkout, Cart_products
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -483,16 +483,26 @@ def order_cancel_approval(request, order_id):
     next_url = request.GET.get("next")
     try:
         order = Order_items.objects.get(id=order_id)
+        cancel_order = Cancelled_order.objects.get(ordered_item=order)
         if order.status != "Delivered":
             order_status = order.STATUS_CHOICES
             order.cancel_return_confirm = False
             order.status = order_status[5][1]
             order.save()
+            
+            cancel_order.pickup_date = (timezone
+                                        .now().date() + timedelta(days=2))
+            cancel_order.save()
         else:
             order_status = order.STATUS_CHOICES
             order.status = order_status[6][1]
             order.cancel_return_confirm = False
             order.save()
+
+            cancel_order.pickup_date = (timezone
+                                        .now().date() + timedelta(days=2))
+            cancel_order.has_dispatched = True
+            cancel_order.save()
 
         if order.order.payment_method != "cod":
             user_wallet = Wallet_User.objects.get(user_id=order.order.user_id)
@@ -745,6 +755,12 @@ def re_order_payment(request):
 
 #  <  ===========   End Reorder order ===========   > #
 
+#  <  ===========   CHECK RETURN BLOCKED  ===========   > #
+
+
+#  <  ===========   CHECK RETURN BLOCKED  ===========   > #
+
+#  <  ===========   All User orders  ===========   > #
 
 #  <  ===========   All User orders  ===========   > #
 
@@ -797,10 +813,15 @@ def cancel_order(request, order_id):
     storage.used = True
 
     next_url = request.GET.get("next")
+    reason = request.GET.get('reason')
+    print(reason)
+
     try:
         order_item = Order_items.objects.get(id=order_id)
         order_item.cancel_return_confirm = True
         order_item.save()
+        cancel_order = Cancelled_order(ordered_item=order_item,user=request.user,reason=reason)
+        cancel_order.save()
     except Order_items.DoesNotExist:
         messages.error(request, "Couldn't cancel order, try again")
 
