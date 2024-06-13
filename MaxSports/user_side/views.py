@@ -80,7 +80,8 @@ def user_sign_up(request):
             request.session["email"] = email
             request.session["username"] = username
             request.session["password"] = password
-            request.session["referral_code"] = referral_code
+            if referral_code:
+                request.session["referral_code"] = referral_code
             email_otp_generator(email, request)
             return redirect("otp_reg")
         except ValueError as e:
@@ -204,23 +205,24 @@ def otp_reg(request):
             user.first_name, user.last_name = first_name, last_name
             user.save()
 
-            wallet_user = Wallet_User.objects.create(user_id=user, balance=50)
+            wallet_user = Wallet_User.objects.create(user_id=user)
+            if referral_code:
+                wallet_user.balance = 50
             wallet_user.save()
+            if referral_code:
+                wallet_history = Wallet_transactions.objects.create(
+                    wallet_id=wallet_user, transaction_for="Referral"
+                )
+                wallet_history.save()
+                referral_obj = referral.objects.get(referral_code=referral_code)
+                wallet = Wallet_User.objects.get(user_id=referral_obj.user)
+                wallet.balance = wallet.balance + 150
+                wallet.save()
 
-            wallet_history = Wallet_transactions.objects.create(
-                wallet_id=wallet_user, transaction_for="Referral"
-            )
-            wallet_history.save()
-
-            referral_obj = referral.objects.get(referral_code=referral_code)
-            wallet = Wallet_User.objects.get(user_id=referral_obj.user)
-            wallet.balance = wallet.balance + 150
-            wallet.save()
-
-            wallet_history = Wallet_transactions.objects.create(
-                wallet_id=wallet, transaction_for="Referral"
-            )
-            wallet_history.save()
+                wallet_history = Wallet_transactions.objects.create(
+                    wallet_id=wallet, transaction_for="Referral"
+                )
+                wallet_history.save()
 
             storage = messages.get_messages(request)
             storage.used = True
