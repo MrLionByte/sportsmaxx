@@ -430,10 +430,16 @@ def order_details(request, order_id):
         STATUS_CHOICES = "Returned"
     else:
         STATUS_CHOICES = None
+    if Cancelled_order.objects.filter(ordered_item=order_details).exists():
+        cancel = Cancelled_order.objects.get(ordered_item=order_details)
+    else:
+        cancel = None
+
 
     context = {
         "order_details": order_details,
         "status_choices": STATUS_CHOICES,
+        'cancel': cancel,
     }
     return render(request, "admin/admin_order_details.html", context)
 
@@ -482,26 +488,28 @@ def order_cancel_approval(request, order_id):
     next_url = request.GET.get("next")
     try:
         order = Order_items.objects.get(id=order_id)
-        cancel_order = Cancelled_order.objects.get(ordered_item=order)
+        cancel_order = None
+        if Cancelled_order.objects.filter(ordered_item=order).exists():
+            cancel_order = Cancelled_order.objects.get(ordered_item=order)
         if order.status != "Delivered":
             order_status = order.STATUS_CHOICES
             order.cancel_return_confirm = False
             order.status = order_status[5][1]
             order.save()
-            
-            cancel_order.pickup_date = (timezone
-                                        .now().date() + timedelta(days=2))
-            cancel_order.save()
+            if cancel_order:
+                cancel_order.pickup_date = (timezone
+                                            .now().date() + timedelta(days=2))
+                cancel_order.save()
         else:
             order_status = order.STATUS_CHOICES
             order.status = order_status[6][1]
             order.cancel_return_confirm = False
             order.save()
-
-            cancel_order.pickup_date = (timezone
-                                        .now().date() + timedelta(days=2))
-            cancel_order.has_dispatched = True
-            cancel_order.save()
+            if cancel_order:
+                cancel_order.pickup_date = (timezone
+                                            .now().date() + timedelta(days=2))
+                cancel_order.has_dispatched = True
+                cancel_order.save()
 
         if order.order.payment_method != "cod":
             user_wallet = Wallet_User.objects.get(user_id=order.order.user_id)
@@ -811,7 +819,6 @@ def cancel_order(request, order_id):
 
     next_url = request.GET.get("next")
     reason = request.GET.get('reason')
-    ''(reason)
 
     try:
         order_item = Order_items.objects.get(id=order_id)
@@ -862,7 +869,7 @@ def download_invoice(request, serial_number):
     context = {"order_details": order_details, "order_details_all": order_details_all}
     template = loader.get_template("user/invoice.html")
     html = template.render(context, request)
-    pdf = weasy''.HTML(string=html).write_pdf()
+    pdf = weasyprint.HTML(string=html).write_pdf()
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
     response.write(pdf)

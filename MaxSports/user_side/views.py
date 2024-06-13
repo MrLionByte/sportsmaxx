@@ -39,7 +39,6 @@ def user_sign_up(request):
         referral_code = request.POST.get("referral")
 
         check_Fname = views.name_validator(firstname)
-        check_Lname = views.name_validator(lastname)
         check_email = views.email_test(email)
         check_username = views.username_test(username)
         check_password = views.validate_password(password)
@@ -60,9 +59,6 @@ def user_sign_up(request):
             if check_Fname[0] is True:
                 messages.error(request, check_Fname[1])
                 return redirect("user_sign_up")
-            if check_Lname[0] is True:
-                messages.error(request, check_Lname[1])
-                return redirect("user_sign_up")
             if check_email[0] is True:
                 messages.error(request, check_email[1])
                 return redirect("user_sign_up")
@@ -76,7 +72,8 @@ def user_sign_up(request):
                     return redirect("user_sign_up")
 
             request.session["firstname"] = firstname
-            request.session["lastname"] = lastname
+            if lastname:
+                request.session["lastname"] = lastname
             request.session["email"] = email
             request.session["username"] = username
             request.session["password"] = password
@@ -200,6 +197,8 @@ def otp_reg(request):
             referral_code = request.session.get("referral_code")
 
             user = User.objects.create_user(user_name, email, password)
+            if last_name:
+                user.last_name = last_name
             user.first_name, user.last_name = first_name, last_name
             user.save()
 

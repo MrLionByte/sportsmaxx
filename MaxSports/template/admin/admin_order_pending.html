@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block js_link_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 
 .dropbtn {
@@ -142,15 +143,17 @@ swal("Message", "{{ message }}"); // Display general message
                   <a href="{% url 'order_confirmation' order_id=order.id %}?next={{ request.path }}">
                     <button type="button" class="btn  btn-outline-warning" data-bs-toggle="button" aria-pressed="true">Approve<br>order</button></a>
                   {% elif order.accept_order and order.cancel_return_confirm and order.status != 'Cancelled' and order.status != 'Delivered' and order.status != 'Returned' %}
-                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}"><button type="button" class="btn  btn-outline-danger"
-                    data-bs-toggle="button" aria-pressed="true">Confirm <br>Cancel</button></a>
+                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}" id="confirmCancelButton">
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Confirm <br>Cancel</button>
+                </a>
                   {% elif order.cancel_return_confirm and order.status == 'Cancelled' %}
                     <p class="text-danger">Order Cancelled</p>
                   {% elif order.cancel_return_confirm and order.status == 'Returned' %}
                     <p class="text-danger">Returned</p>
                   {% elif order.cancel_return_confirm and not order.accept_order %}
-                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}"><button type="button" class="btn  btn-outline-danger"
-                    data-bs-toggle="button" aria-pressed="true">Confirm <br>Cancel</button></a>
+                  <a class="ml-2" href="{% url 'order_cancel_approval' order_id=order.id %}?next={{ request.path }}" id="confirmReturnButton">
+                    <button type="button" class="btn  btn-outline-danger"
+                    data-bs-toggle="button" aria-pressed="true">Confirm <br>Return</button></a>
                   {% else %}
                   <p class="text-warning">No action</p>
                   {% endif %}
@@ -172,3 +175,46 @@ swal("Message", "{{ message }}"); // Display general message
 </div>
 
 {% endblock dashboard %}
+
+{% block js_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+<script>
+
+  document.getElementById('confirmReturnButton').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent the default action
+
+    Swal.fire({
+        title: 'Are you sure, Return it?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = event.currentTarget.href;
+        }
+    });
+});
+
+  document.getElementById('confirmCancelButton').addEventListener('click', function(event) {
+      event.preventDefault();  // Prevent the default action
+  
+      Swal.fire({
+          title: 'Are you sure, Cancel it?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, cancel it!'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              window.location.href = event.currentTarget.href;
+          }
+      });
+  });
+  </script>
+{% endblock js_scripts %}
