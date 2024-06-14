@@ -118,15 +118,15 @@ swal("Message", "{{ message }}"); // Display general message
                 </td>
                   <td class="d-flex justify-content-center">
               
-                    {% if not order_details.accept_order and not order_details.cancel_return_confirm and order_details.status != 'Returned' and order_details.status != 'Cancelled' and order_details.status != 'Payment Pending' %}
+                    {% if not order_details.cancel_return_confirm and order_details.status == 'Order Pending' %}
                     <a href="{% url 'order_confirmation' order_details.id %}?next={{ request.path }}">
                         <button type="button" class="btn  btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Approve <br>Order</button>
                     </a>
-                    {% elif order_details.cancel_return_confirm and not order_details.status == 'Delivered' and order_details.status != 'Returned' %}
+                    {% elif order_details.cancel_return_confirm and not order_details.status != 'Delivered' and order_details.status != 'Returned' and order.status != 'Cancelled' %}
                     <a href="{% url 'order_cancel_approval' order_details.id %}?next={{ request.path }}" id="cancelOrderButton">
                       <button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Cancel <br>Order</button>
                   </a>
-                    {% elif order_details.cancel_return_confirm and order_details.status != 'Cancelled' and order_details.status != 'Returned' %}
+                    {% elif order_details.cancel_return_confirm and order_details.status == 'Delivered' and order_details.status != 'Returned' %}
                     <a href="{% url 'order_cancel_approval' order_details.id %}?next={{ request.path }}" id="cancelButton">
                       <button type="button" class="btn btn-outline-danger" data-bs-toggle="button" aria-pressed="true">Return <br>Confirm</button>
                   </a>
@@ -228,7 +228,7 @@ swal("Message", "{{ message }}"); // Display general message
 {% endblock dashboard %}
 
 {% block js_scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
@@ -267,7 +267,9 @@ swal("Message", "{{ message }}"); // Display general message
         }
     });
 });
-
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script>
   function showConfirmation(selectElement) {
     swal({
       title: "Change Status",

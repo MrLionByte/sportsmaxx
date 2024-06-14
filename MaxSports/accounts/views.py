@@ -477,7 +477,7 @@ def add_checkout_address(request):
             return redirect("checkout_product")
         except Exception as e:
             messages.error(request, f"Error ! {e}")
-    return render(request, "user/add_address.html")
+    return render(request, "user/add_address.html",{'checkout_product': True})
 
 
 # =========  Checkout End address details  =========== #

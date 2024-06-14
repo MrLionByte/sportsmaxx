@@ -68,10 +68,10 @@ swal("Message", "{{ message }}"); // Display general message
 				
 				{% if data.is_listed %}
 				 <a class="ml-2" href="{% url 'admin_UnList_category' data.pk %}">
-                <button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">List</button></a>
+                <button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">UnList</button></a>
 				{% else %}
 				<a class="ml-2" href="{% url 'admin_List_category' data.pk %}">
-				<button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">UnList</button></a>	
+				<button type="button" class="btn  btn-outline-success" data-bs-toggle="button" aria-pressed="true">List</button></a>	
 				{% endif %}
 
 				<a href="#deleteEmployeeModal-{{forloop.counter}}" class="delete" data-toggle="modal">

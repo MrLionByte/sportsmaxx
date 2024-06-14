@@ -90,32 +90,6 @@ def user_sign_up(request):
 
 # =========  END SIGN-UP  =========== #
 
-
-# =========  MOBILE OTP  =========== #
-
-# @api_view
-# def send_otp(request):
-#         data = request.data
-
-#         if data.get('phone_number') is None:
-#                 return Response ({
-#                         'status' : 400
-#                         'message' : 'Key phone number is required'
-#                 })
-
-#         if data.get('password') is None:
-#                 return Response ({
-#                         'status' : 400
-#                         'message' : 'Key password is required'
-#                 })
-#         phone = data.get('phone')
-#         otp = send_otp_phone(data.get('phone'))
-#         user = User.objects.create(phone = phone)
-#         user.set_password = data.get('set_password')
-
-# =========  END MOBILE OTP  =========== #
-
-
 # ========= EMAIL OTP GENERATOR =========== #
 def email_otp_generator(email, request=None):
     otp = random.randint(100000, 999999)
@@ -249,24 +223,23 @@ def user_sign_in(request):
         check_name = request.POST.get("username")
         password = request.POST.get("password")
         try:
-
-            try:
+            user_object = authenticate(
+                request, username=check_name, password=password)
+            if user_object is None:
                 user_object = authenticate(
-                    request, username=check_name, password=password
-                )
-                if user_object is None:
-                    raise User.DoesNotExist
-            except User.DoesNotExist:
-                user = User.objects.get(email=check_name)
-                user_object = authenticate(
-                    request, username=user.username, password=password
-                )
-
+                request, email=check_name, password=password)
+  
             if user_object is not None:
                 login(request, user_object)
                 return redirect("home")
 
             elif User.objects.filter(username=check_name, is_active=True).exists():
+                # request.session['username_for_forgot_password'] = check_name
+                request.session["username"] = check_name
+                x = request.session.get("username")
+                messages.info(request, "Password is incorrect ")
+                flag = 1
+            elif User.objects.filter(email=check_name, is_active=True).exists():
                 # request.session['username_for_forgot_password'] = check_name
                 request.session["username"] = check_name
                 x = request.session.get("username")

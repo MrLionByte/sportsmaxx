@@ -324,6 +324,7 @@ def validate_phone(phone):
 
 
 def validate_state(state):
+    state = state.upper()[0] + state.lower()[1:]
     if not state:
         message = "State name cannot be empty."
         return True, message

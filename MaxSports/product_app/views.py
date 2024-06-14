@@ -529,7 +529,7 @@ def admin_edit_variant(request):
             data_product.full_clean()
             data_product.save()
             messages.success(
-                request, f"{product_variant} added" + " for {data_product.product_id}"
+                request, f"{product_variant} added" + f" for {data_product.product_id}"
             )
         except ModuleNotFoundError:
             return redirect("admin_edit_variant")
@@ -585,13 +585,9 @@ def admin_add_size_qty(request):
                         size_variant.full_clean()
                         size_variant.save()
                         messages.success(request, f"Variant added for {product_color}")
-                        return redirect(
-                            "admin_add_size_qty",
-                            {"product_sizes_display": product_sizes_display},
-                        )
+                        return redirect("admin_add_size_qty")
                     except ValidationError as e:
                         messages.error(request, "Error ,Check the variant")
-                        product_sizes_display
                         return redirect(
                             "admin_add_size_qty",
                             {"product_sizes_display": product_sizes_display},

@@ -26,10 +26,13 @@
                 </div>
               </div>
               <hr>
-
-              <form action="{% url 'add_account_address' %}" method="post">
+              {% if check_out %}
+              <form action="{% url 'checkout_product' %}" method="post">
                 {% csrf_token %}
-
+              {% else %}
+              <form action="{% url 'add_account_address' %}" method="post">
+                {% csrf_token %}             
+                {% endif %}
                 <div class="m-3">
                   <label for="exampleInputEmail1" class="form-label">Enter Full name to contact</label>
                 <input type="text" name="full_name" class="form-control" maxlength="50"
