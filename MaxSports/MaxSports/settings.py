@@ -204,8 +204,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "fanunaf25@gmail.com"
-EMAIL_HOST_PASSWORD = "fmfx ymfz ydcl zspv"
+EMAIL_HOST_USER = "example@gmail.com"
+EMAIL_HOST_PASSWORD = "add here"
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
@@ -221,8 +221,6 @@ LOGIN_URL = "/user_sign_in/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# 709265551509-f2kl7pa26d30d4lkjs6iddmcgg7k5om8.apps.googleusercontent.com
-# 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
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -238,7 +236,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Django Razor Pay
-RAZORPAY_API_KEY = "rzp_test_JKfjxVrTUPOFRK"
-RAZORPAY_API_SECRET = "i6kT8ZRsOzMPQZK70XH0Ttwf"
+RAZORPAY_API_KEY = "add here"
+RAZORPAY_API_SECRET = "add here"
 # To Enable Popus in Django or else it will block the payment popup
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
