@@ -5,9 +5,7 @@ Elevate Your Game! Discover top-quality jerseys, cycles, sportswear, and equipme
 This project is a comprehensive sports online solution developed using Django for the backend, with HTML, JavaScript, AJAX, and Bootstrap for the frontend. It is hosted on AWS using Nginx for server management, and the database is powered by PostgreSQL. Domain services are managed via GoDaddy, with the site secured by an HTTPS certificate.Build with a posiblity of scaling up if needed.
 
 
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![Screenshot 2024-09-15 101415](https://github.com/user-attachments/assets/b21dc12b-c1a6-49a8-a053-0e489bdb9aae)
 
 
 ## Features
